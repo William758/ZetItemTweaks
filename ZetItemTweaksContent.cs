@@ -26,9 +26,12 @@ namespace TPDespair.ZetItemTweaks
 			OldWarStealthKit.EvadeBuff = Buffs.StealthEvade;
 			RoseBuckler.MomentumBuff = Buffs.SprintMomentum;
 			BerzerkersPauldron.MultiKillBuff = Buffs.MultiKill;
+			Aegis.BarrierBuff = Buffs.BarrierArmor;
 			FrostRelic.IndicatorBuff = Buffs.IcicleIndicator;
 
 			AlienHead.PickupIcon = Sprites.GreenAlien;
+			BlackMonolith.PickupIcon = Sprites.RedMonolith;
+			ScratchTicket.PickupIcon = Sprites.GreenTicket;
 
 			contentPack.buffDefs.Add(Buffs.buffDefs.ToArray());
 
@@ -56,6 +59,7 @@ namespace TPDespair.ZetItemTweaks
 			public static BuffDef StealthEvade;
 			public static BuffDef SprintMomentum;
 			public static BuffDef MultiKill;
+			public static BuffDef BarrierArmor;
 			public static BuffDef IcicleIndicator;
 
 			public static List<BuffDef> buffDefs = new List<BuffDef>();
@@ -78,7 +82,7 @@ namespace TPDespair.ZetItemTweaks
 				SprintMomentum.buffColor = new Color(1f, 0.75f, 0.25f);
 				SprintMomentum.canStack = true;
 				SprintMomentum.isDebuff = false;
-				SprintMomentum.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/SmallArmorBoost").iconSprite;
+				SprintMomentum.iconSprite = Sprites.SprintArmor;
 
 				buffDefs.Add(SprintMomentum);
 
@@ -90,6 +94,16 @@ namespace TPDespair.ZetItemTweaks
 				MultiKill.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/WarCryBuff").iconSprite;
 
 				buffDefs.Add(MultiKill);
+
+				BarrierArmor = ScriptableObject.CreateInstance<BuffDef>();
+				BarrierArmor.name = "ZetBarrierArmor";
+				BarrierArmor.buffColor = new Color(0.75f, 0.75f, 0.75f);
+				BarrierArmor.canStack = false;
+				BarrierArmor.isDebuff = false;
+				BarrierArmor.isHidden = true;
+				BarrierArmor.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/SmallArmorBoost").iconSprite;
+
+				buffDefs.Add(BarrierArmor);
 
 				IcicleIndicator = ScriptableObject.CreateInstance<BuffDef>();
 				IcicleIndicator.name = "ZetIcicleIndicator";
@@ -105,11 +119,19 @@ namespace TPDespair.ZetItemTweaks
 		public static class Sprites
 		{
 			public static Sprite GreenAlien;
+			public static Sprite RedMonolith;
+			public static Sprite GreenTicket;
+
+			public static Sprite SprintArmor;
 			public static Sprite SnowFlake;
 
 			public static void Create()
 			{
 				GreenAlien = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texAlienHeadGreen.png");
+				RedMonolith = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBlackMonolithRed.png");
+				GreenTicket = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texScratchTicketGreen.png");
+
+				SprintArmor = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffSprintArmor.png");
 				SnowFlake = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffIcicleShaded.png");
 			}
 		}

@@ -213,6 +213,16 @@ namespace TPDespair.ZetItemTweaks
 
 
 
+		internal static int GetBehaviorMomentumValue()
+		{
+			if (BaseMomentumMove.Value > 0f || BaseMomentumArmor.Value > 0f)
+			{
+				return MaxMomentum.Value;
+			}
+
+			return 0;
+		}
+
 		private static void HandleItemBehavior(CharacterBody body)
 		{
 			if (NetworkServer.active)
@@ -269,8 +279,8 @@ namespace TPDespair.ZetItemTweaks
 		public int currentMomentum = 0;
 
 		public float tracker = 0f;
-		public float chargeRate = 5f;
-		public float decayRate = 2.5f;
+		public float chargeRate = 2.5f;
+		public float decayRate = 5f;
 
 		public float timeSinceLastSprint = 0f;
 		public float sprintThreshold = 0.1f;
@@ -282,16 +292,9 @@ namespace TPDespair.ZetItemTweaks
 
 		public void OnEnable()
 		{
-			if (RoseBuckler.BaseMomentumMove.Value > 0f || RoseBuckler.BaseMomentumArmor.Value > 0f)
-			{
-				maxMomentum = RoseBuckler.MaxMomentum.Value;
-			}
-			else
-			{
-				maxMomentum = 0;
-			}
+			maxMomentum = RoseBuckler.GetBehaviorMomentumValue();
 
-			sprintThreshold = RoseBuckler.SprintThreshold.Value;
+			sprintThreshold = Mathf.Max(0f, RoseBuckler.SprintThreshold.Value);
 
 			chargeRate = RoseBuckler.ChargeInterval.Value;
 			chargeRate = (chargeRate >= 0.01f) ? (1f / chargeRate) : 0f;
@@ -303,6 +306,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				body.SetBuffCount(RoseBuckler.MomentumBuff.buffIndex, 0);
 			}
+
+			timeSinceLastSprint = sprintThreshold + 1f;
 		}
 
 		public void OnDisable()
@@ -321,14 +326,8 @@ namespace TPDespair.ZetItemTweaks
 				{
 					float deltaTime = Time.fixedDeltaTime;
 
-					if (body.isSprinting)
-					{
-						timeSinceLastSprint = 0f;
-					}
-					else
-					{
-						timeSinceLastSprint += deltaTime;
-					}
+					if (body.isSprinting) timeSinceLastSprint = 0f;
+					else timeSinceLastSprint += deltaTime;
 
 					if (timeSinceLastSprint <= sprintThreshold)
 					{

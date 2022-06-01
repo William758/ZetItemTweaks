@@ -2,7 +2,7 @@
 
 Some item balance changes and tweaks.
 
-Provides a wide range of configuration options for 32 items.
+Provides a wide range of configuration options for 39 items.
 
 Changes for each item can be disabled.
 
@@ -34,6 +34,20 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Increases health regeneration by 3.2 hp/s (+3.2 hp/s per stack) while out of danger.
 ```
 
+### Weeping Fungus
+
+```
+- Heal for 2% (+1% per stack) hp/s while sprinting. (from 2% (+2% per stack))
+- Count as still sprinting up to 0.2 seconds after not sprinting.
+- Hide associated activity buff.
+```
+
+### Scratch Ticket (Mystics Items)
+
+```
+- Unchanged. (configuration to set item tier to green added)
+```
+
 ### Predatory Instincts
 
 ```
@@ -45,6 +59,12 @@ To use the changes from this mod, disable the changes made in the other mod and 
 ```
 - Kills grant 10% (+10% per stack) more gold.
 - Treasure chance 5% (+2.5% per stack). (from 4% (+4% per stack))
+```
+
+### Ukulele
+
+```
+- Unchanged. (configuration added)
 ```
 
 ### Death Mark
@@ -62,10 +82,29 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Increase attack speed by 40% (+20% per stack).
 ```
 
+### Kjaro's Band
+
+```
+- Fire Tornado deals 300% (+200% per stack) TOTAL damage. (from 300% (+300% per stack))
+```
+
 ### Harvester's Scythe
 
 ```
 - Unchanged. (configuration added)
+```
+
+### Runald's Band
+
+```
+- Ice Blast deals 240% (+160% per stack) TOTAL damage. (from 250% (+250% per stack))
+- Chill duration of 4s. (from 3s (+3s per stack))
+```
+
+### AtG Missile Mk. 1
+
+```
+- Missile deals 300% (+200% per stack) TOTAL damage. (from 300% (+300% per stack))
 ```
 
 ### Hunter's Harpoon
@@ -126,6 +165,24 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Duration of 4 seconds.
 - Kills grant 7.5% movement speed and 15% attack speed and refreshes buff timer.
 - Maximum of 3 (+2 per stack) Multi Kill buff.
+```
+
+### Polylute
+
+```
+- Strike target up to 3 (+2 per stack) times. (from 3 (+3 per stack))
+```
+
+### Plasma Shrimp
+
+```
+- Missile deals 40% (+25% per stack) TOTAL damage. (from 40% (+40% per stack))
+```
+
+### Black Monolith (Mystics Items)
+
+```
+- Unchanged. (configuration to set item tier to red added)
 ```
 
 ### Alien Head
@@ -218,7 +275,7 @@ To use the changes from this mod, disable the changes made in the other mod and 
 
 ```
 - Increases health by 10% (+10% per stack).
-- Increases health regeneration by 0.4 hp/s (0.4 hp/s per stack).
+- Increases health regeneration by 0.4 hp/s (+0.4 hp/s per stack).
 - Increases armor by 1 (+1 per stack).
 - Increases other stats by 1% (+1% per stack).
 - Other stats now includes cooldown reduction.
@@ -228,7 +285,7 @@ To use the changes from this mod, disable the changes made in the other mod and 
 
 ```
 - Increases health by 10% (+10% per stack).
-- Increases health regeneration by 4 hp/s (4 hp/s per stack).
+- Increases health regeneration by 4 hp/s (+4 hp/s per stack).
 - Increases armor by 10 (+10 per stack).
 - Increases other stats by 10% (+10% per stack).
 - Other stats now includes cooldown reduction.
@@ -249,4 +306,28 @@ Use r2modman or place inside of Risk of Rain 2/Bepinex/Plugins/
 
 ## Changelog:
 
-v1.0.0 - Initial Release.
+**1.1.0**
+
+```
+Added Item Support:
+- Unchanged : Ukulele, ScratchTicket, Black Monolith.
+- Nerfed: WeepingFungus, Polylute, AtgMissileMk1, PlasmaShrimp, KjarosBand, RenaldsBand.
+
+Rose Buckler:
+- Custom Momentum buff icon.
+
+Aegis:
+- Fixed armor while barrier is active.
+```
+
+**1.0.1**
+
+```
+- Fixed for latest game update.
+```
+
+**1.0.0**
+
+```
+- Initial Release.
+```

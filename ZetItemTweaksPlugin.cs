@@ -23,7 +23,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.0.0";
+		public const string ModVer = "1.1.0";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
@@ -45,6 +45,7 @@ namespace TPDespair.ZetItemTweaks
 		public static Action OnLateSetup;
 
 		internal static string LastPluginChecked = "";
+		internal static string SetupPhase = "";
 		internal static int ConfigCount = 0;
 		internal static int ModifyCount = 0;
 		internal static int TweakCount = 0;
@@ -76,15 +77,28 @@ namespace TPDespair.ZetItemTweaks
 
 			StatHooks.Init();
 
+			// T1 Items
 			LensMakersGlasses.Init();
 			BisonSteak.Init();
 			CautiousSlug.Init();
 
+			// T1 VoidItems
+			WeepingFungus.Init();
+
+			// T1 Modded Items
+			ScratchTicket.Init();
+
+			// T2 Items
 			PredatoryInstincts.Init();
 			GhorsTome.Init();
+			Ukulele.Init();
 			DeathMark.Init();
 			WarHorn.Init();
+			////WillotheWisp.Init();
+			KjarosBand.Init();
 			HarvestersScythe.Init();
+			RenaldsBand.Init();
+			AtgMissileMk1.Init();
 			HuntersHarpoon.Init();
 			OldWarStealthKit.Init();
 			Shuriken.Init();
@@ -95,6 +109,15 @@ namespace TPDespair.ZetItemTweaks
 			RazorWire.Init();
 			BerzerkersPauldron.Init();
 
+			// T2 Void Items
+			Polylute.Init();
+			////VoidsentFlame.Init();
+			PlasmaShrimp.Init();
+
+			// T2 Modded Items
+			BlackMonolith.Init();
+
+			// T3 Items
 			AlienHead.Init();
 			ShatteringJustice.Init();
 			Aegis.Init();
@@ -106,13 +129,12 @@ namespace TPDespair.ZetItemTweaks
 			NkuhanasOpinion.Init();
 			UnstableTeslaCoil.Init();
 
+			// Boss Items
 			ShatterSpleen.Init();
 			TitanicKnurl.Init();
 			Pearl.Init();
 			IrradiantPearl.Init();
 			LittleDisciple.Init();
-
-			OnLateSetup += PostSetupInfo;
 
 			LanguageOverride();
 		}
@@ -218,9 +240,12 @@ namespace TPDespair.ZetItemTweaks
 			Action action = OnItemCatalogPreInit;
 			if (action != null)
 			{
+				SetupPhase = "ModifyItem";
 				LogInfo("ItemCatalog Initializing!");
 
 				action();
+
+				SetupPhase = "";
 			}
 
 			orig();
@@ -231,9 +256,14 @@ namespace TPDespair.ZetItemTweaks
 			Action action = OnLateSetup;
 			if (action != null)
 			{
+				SetupPhase = "LateSetup";
 				LogInfo("LateSetup Initialized!");
 
 				action();
+
+				PostSetupInfo();
+
+				SetupPhase = "";
 			}
 		}
 
@@ -273,7 +303,7 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		internal static void SetupFragments()
+		private static void SetupFragments()
 		{
 			RegisterFragment("BASE_STACK_FORMAT", "{0} {1}");
 
@@ -341,8 +371,8 @@ namespace TPDespair.ZetItemTweaks
 				{
 					if (!silent)
 					{
-						LogInfo(identifier + " :: Proceed with LateSetup.");
-						TweakCount++;
+						LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
+						if (SetupPhase == "LateSetup") TweakCount++;
 					}
 
 					return true;
@@ -360,8 +390,8 @@ namespace TPDespair.ZetItemTweaks
 
 				if (!silent)
 				{
-					LogInfo(identifier + " :: Proceed with LateSetup.");
-					TweakCount++;
+					LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
+					if (SetupPhase == "LateSetup") TweakCount++;
 				}
 
 				return true;
@@ -370,8 +400,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (!silent)
 				{
-					LogInfo(identifier + " :: Proceed with LateSetup.");
-					TweakCount++;
+					LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
+					if (SetupPhase == "LateSetup") TweakCount++;
 				}
 
 				return true;
@@ -399,6 +429,23 @@ namespace TPDespair.ZetItemTweaks
 		}
 
 
+
+		internal static ItemDef FindItemDefPreCatalogInit(string identifier)
+		{
+			foreach (ItemDef itemDef in ContentManager.itemDefs)
+			{
+				if (itemDef.name == identifier) return itemDef;
+			}
+
+			return null;
+		}
+
+		internal static void AssignDepricatedTier(ItemDef itemDef, ItemTier itemTier)
+		{
+			#pragma warning disable CS0618 // Type or member is obsolete
+			itemDef.deprecatedTier = itemTier;
+			#pragma warning restore CS0618 // Type or member is obsolete
+		}
 
 		internal static void RefreshBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration)
 		{

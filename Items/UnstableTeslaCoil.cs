@@ -86,9 +86,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void ModifyItem()
 		{
-			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList, true)) return;
-
-			LogInfo(itemIdentifier + " :: Proceed with ModifyItem.");
+			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
 			bool modified = false;
 
@@ -124,7 +122,7 @@ namespace TPDespair.ZetItemTweaks
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
 				RegisterFragment("TESLA_DAMAGE", "Fire out <style=cIsDamage>lightning</style> that repeatedly deals {0} base damage.");
-				RegisterFragment("TESLA_TARGETING", "\nHits up to {0} targets in a {1} radius.");
+				RegisterFragment("TESLA_TARGETING", "\nHits up to {0} targets within {1}.");
 				RegisterFragment("TESLA_ALTERNATE", "\nThe Tesla Coil cycles activity {0}.");
 				RegisterToken("ITEM_SHOCKNEARBY_DESC", DescriptionText());
 			}
@@ -139,7 +137,7 @@ namespace TPDespair.ZetItemTweaks
 				ScalingText(BaseDamage.Value, StackDamage.Value, "percent", "cIsDamage")
 			);
 			output += String.Format(
-				TextFragment("RAZOR_TARGETING"),
+				TextFragment("TESLA_TARGETING"),
 				ScalingText(BaseTarget.Value, StackTarget.Value, "flat", "cIsDamage"),
 				ScalingText(BaseRange.Value, StackRange.Value, "distance", "cIsDamage")
 			);

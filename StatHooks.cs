@@ -14,7 +14,7 @@ namespace TPDespair.ZetItemTweaks
 		{
 			MovementSpeedHook();
 			DamageHook();
-			//ShieldHook();
+			ShieldHook();
 			HealthHook();
 			AttackSpeedHook();
 			RegenHook();
@@ -229,7 +229,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 			};
 		}
-		/*
+		
 		private static void ShieldHook()
 		{
 			IL.RoR2.CharacterBody.RecalculateStats += (il) =>
@@ -255,6 +255,28 @@ namespace TPDespair.ZetItemTweaks
 					c.Emit(OpCodes.Callvirt, typeof(CharacterBody).GetMethod("get_maxHealth"));
 					c.EmitDelegate<Func<CharacterBody, float, float, float>>((self, shield, health) =>
 					{
+						float healthFraction = 0f;
+
+						Inventory inventory = self.inventory;
+						if (inventory)
+						{
+							if (PlasmaShrimp.appliedChanges)
+							{
+								int count = inventory.GetItemCount(DLC1Content.Items.MissileVoid);
+								if (count > 0)
+								{
+									float targetValue = PlasmaShrimp.BaseHealthAsShield.Value + (PlasmaShrimp.StackHealthAsShield.Value * (count - 1));
+
+									healthFraction += targetValue - 0.1f;
+								}
+							}
+						}
+
+						if (healthFraction != 0f)
+						{
+							shield += health * healthFraction;
+						}
+
 						return shield;
 					});
 					c.Emit(OpCodes.Stloc, shieldValue);
@@ -265,7 +287,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 			};
 		}
-		*/
+		
 		private static void HealthHook()
 		{
 			IL.RoR2.CharacterBody.RecalculateStats += (il) =>
@@ -773,8 +795,7 @@ namespace TPDespair.ZetItemTweaks
 
 						if (Aegis.BaseBarrierArmor.Value > 0f)
 						{
-							HealthComponent healthComponent = self.healthComponent;
-							if (healthComponent && healthComponent.barrier > 0f)
+							if (self.HasBuff(Aegis.BarrierBuff))
 							{
 								armor += Aegis.BaseBarrierArmor.Value + (Aegis.StackBarrierArmor.Value * (count - 1));
 							}

@@ -113,7 +113,7 @@ namespace TPDespair.ZetItemTweaks
 				RegisterFragment("RAZOR_BURST", "Getting hit causes you to explode in a burst of razors ");
 				RegisterFragment("RAZOR_DAMAGE_BASIC", "that deal {0} <style=cIsDamage>damage</style>.");
 				RegisterFragment("RAZOR_DAMAGE_COMPLEX", "that deal between {0} and {1} <style=cIsDamage>damage</style>.");
-				RegisterFragment("RAZOR_TARGETING", "\nHits up to {0} targets in a {1} radius.");
+				RegisterFragment("RAZOR_TARGETING", "\nHits up to {0} targets within {1}.");
 				RegisterToken("ITEM_THORNS_DESC", DescriptionText());
 			}
 
@@ -181,7 +181,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 
 				found = c.TryGotoNext(
-					x => x.MatchStloc(70)
+					x => x.MatchStloc(68)
 				);
 
 				if (found)
@@ -195,7 +195,7 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return healthComponent.body.damage * GetDamageCoefficient(damageInfo, hitTime, healthComponent.itemCounts.thorns);
 					});
-					c.Emit(OpCodes.Stloc, 70);
+					c.Emit(OpCodes.Stloc, 68);
 				}
 				else
 				{
@@ -230,7 +230,7 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(66)
+					x => x.MatchStloc(64)
 				);
 
 				if (found)
@@ -248,7 +248,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 1;
 					});
-					c.Emit(OpCodes.Stloc, 66);
+					c.Emit(OpCodes.Stloc, 64);
 				}
 				else
 				{
@@ -264,7 +264,7 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(68)
+					x => x.MatchStloc(66)
 				);
 
 				if (found)
@@ -282,7 +282,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 5f;
 					});
-					c.Emit(OpCodes.Stloc, 68);
+					c.Emit(OpCodes.Stloc, 66);
 				}
 				else
 				{

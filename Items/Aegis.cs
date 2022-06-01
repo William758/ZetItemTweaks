@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -11,6 +12,8 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class Aegis
 	{
+		internal static BuffDef BarrierBuff;
+
 		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff", "com.Ben.BenBalanceMod" };
 
 		public static string itemIdentifier = "Aegis";
@@ -80,6 +83,8 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
+			CharacterBody.onBodyInventoryChangedGlobal += HandleItemBehavior;
+
 			OverhealHook();
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
@@ -118,6 +123,14 @@ namespace TPDespair.ZetItemTweaks
 
 
 
+		private static void HandleItemBehavior(CharacterBody body)
+		{
+			if (NetworkServer.active)
+			{
+				body.AddItemBehavior<BarrierArmorBehavior>(body.inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal));
+			}
+		}
+
 		private static void OverhealHook()
 		{
 			IL.RoR2.HealthComponent.Heal += (il) =>
@@ -150,6 +163,55 @@ namespace TPDespair.ZetItemTweaks
 					LogWarn(itemIdentifier + " :: OverhealHook Failed!");
 				}
 			};
+		}
+	}
+
+
+
+	public class BarrierArmorBehavior : CharacterBody.ItemBehavior
+	{
+		private HealthComponent healthComponent;
+		private int buffActive = 0;
+
+		public void Awake()
+		{
+			enabled = false;
+		}
+
+		public void OnEnable()
+		{
+			if (body)
+			{
+				healthComponent = body.GetComponent<HealthComponent>();
+
+				buffActive = 0;
+				body.SetBuffCount(Aegis.BarrierBuff.buffIndex, 0);
+			}
+		}
+
+		public void OnDisable()
+		{
+			if (body)
+			{
+				buffActive = 0;
+				body.SetBuffCount(Aegis.BarrierBuff.buffIndex, 0);
+			}
+
+			healthComponent = null;
+		}
+
+		public void FixedUpdate()
+		{
+			if (body)
+			{
+				int active = (healthComponent && healthComponent.barrier > 0f) ? 1 : 0;
+
+				if (buffActive != active)
+				{
+					buffActive = active;
+					body.SetBuffCount(Aegis.BarrierBuff.buffIndex, active);
+				}
+			}
 		}
 	}
 }
