@@ -2,7 +2,7 @@
 
 Some item balance changes and tweaks.
 
-Provides a wide range of configuration options for 39 items.
+Provides a wide range of configuration options for 44 items.
 
 Changes for each item can be disabled.
 
@@ -32,6 +32,18 @@ To use the changes from this mod, disable the changes made in the other mod and 
 
 ```
 - Increases health regeneration by 3.2 hp/s (+3.2 hp/s per stack) while out of danger.
+```
+
+### Focus Crystal
+
+```
+- Unchanged. (configuration added)
+```
+
+### Personal Shield Generator
+
+```
+- Unchanged. (configuration added)
 ```
 
 ### Weeping Fungus
@@ -152,6 +164,15 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Increase movement speed by 10% (+10% per stack).
 ```
 
+### Lepton Daisy
+
+```
+- Healing pulse occurs every 15 seconds. (from 1 (+1 per stack) times)
+- Will continue to pulse if holdout zone is fully charged and still active.
+- Nova heals for 10% (+2.5% per stack) maximum health. (from 50%)
+- Increases health regeneration by 4.8 hp/s (+2.4 hp/s per stack) while charging a holdout zone.
+```
+
 ### Razor Wire
 
 ```
@@ -237,6 +258,12 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Damage per icicle of 200% per second. (from 0% per second)
 ```
 
+### Brainstalks
+
+```
+- Refund skill stock on use, bypassing 0.5 second cooldown.
+```
+
 ### Ben's Raincoat
 
 ```
@@ -269,6 +296,12 @@ To use the changes from this mod, disable the changes made in the other mod and 
 
 ```
 - Increases health by 100 (+50 per stack).
+```
+
+### Planula
+
+```
+- Heal 25 (+25 per stack) health whenever you take damage.
 ```
 
 ### Pearl
@@ -305,6 +338,18 @@ Requires Bepinex and HookGenPatcher.
 Use r2modman or place inside of Risk of Rain 2/Bepinex/Plugins/
 
 ## Changelog:
+
+**1.2.0**
+
+```
+Added Item Support:
+- Buffed : Planula, BrainStalks.
+- Unchanged : PersonalShieldGenerator, FocusCrystal.
+- Tweaked: LeptonDaisy.
+
+Fixed some AutoCompat entries.
+Fixed flat health regeneration not being scaled by level.
+```
 
 **1.1.0**
 

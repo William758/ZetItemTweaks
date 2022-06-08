@@ -270,6 +270,18 @@ namespace TPDespair.ZetItemTweaks
 									healthFraction += targetValue - 0.1f;
 								}
 							}
+
+							if (PersonalShieldGenerator.appliedChanges)
+							{
+								int count = inventory.GetItemCount(RoR2Content.Items.PersonalShield);
+								if (count > 0)
+								{
+									float defaultValue = 0.08f * count;
+									float targetValue = PersonalShieldGenerator.BaseHealthAsShield.Value + (PersonalShieldGenerator.StackHealthAsShield.Value * (count - 1));
+
+									healthFraction += targetValue - defaultValue;
+								}
+							}
 						}
 
 						if (healthFraction != 0f)
@@ -534,6 +546,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
+				const int lvlScaling = 66;
 				const int knurlValue = 67;
 				const int crocoValue = 70;
 				const int multValue = 72;
@@ -548,8 +561,11 @@ namespace TPDespair.ZetItemTweaks
 					// add (affected by lvl regen scaling and ignites)
 					c.Emit(OpCodes.Ldarg, 0);
 					c.Emit(OpCodes.Ldloc, knurlValue);
-					c.EmitDelegate<Func<CharacterBody, float, float>>((self, value) =>
+					c.Emit(OpCodes.Ldloc, lvlScaling);
+					c.EmitDelegate<Func<CharacterBody, float, float, float>>((self, value, scaling) =>
 					{
+						float amount = 0f;
+
 						Inventory inventory = self.inventory;
 						if (inventory)
 						{
@@ -561,7 +577,7 @@ namespace TPDespair.ZetItemTweaks
 									float defaultValue = 1.6f * count;
 									float targetValue = TitanicKnurl.BaseRegen.Value + (TitanicKnurl.StackRegen.Value * (count - 1));
 
-									value += targetValue - defaultValue;
+									amount += targetValue - defaultValue;
 								}
 							}
 
@@ -574,7 +590,7 @@ namespace TPDespair.ZetItemTweaks
 
 									float targetValue = (BisonSteak.BaseKillRegen.Value + (BisonSteak.StackKillRegen.Value * (itemCount - 1))) * BuffCount;
 
-									value += targetValue - 2f;
+									amount += targetValue - 2f;
 								}
 							}
 
@@ -583,7 +599,7 @@ namespace TPDespair.ZetItemTweaks
 								int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
 								if (count > 0)
 								{
-									value += Pearl.BaseRegen.Value + (Pearl.StackRegen.Value * (count - 1));
+									amount += Pearl.BaseRegen.Value + (Pearl.StackRegen.Value * (count - 1));
 								}
 							}
 
@@ -592,7 +608,7 @@ namespace TPDespair.ZetItemTweaks
 								int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
 								if (count > 0)
 								{
-									value += IrradiantPearl.BaseRegen.Value + (IrradiantPearl.StackRegen.Value * (count - 1));
+									amount += IrradiantPearl.BaseRegen.Value + (IrradiantPearl.StackRegen.Value * (count - 1));
 								}
 							}
 
@@ -604,9 +620,23 @@ namespace TPDespair.ZetItemTweaks
 									float defaultValue = 3f * count;
 									float targetValue = CautiousSlug.BaseSafeRegen.Value + (CautiousSlug.StackSafeRegen.Value * (count - 1));
 
-									value += targetValue - defaultValue;
+									amount += targetValue - defaultValue;
 								}
 							}
+
+							if (LeptonDaisy.appliedChanges && LeptonDaisy.BaseHoldoutRegen.Value > 0f)
+							{
+								int count = self.GetBuffCount(LeptonDaisy.RegenBuff);
+								if (count > 0)
+								{
+									amount += LeptonDaisy.BaseHoldoutRegen.Value + (LeptonDaisy.StackHoldoutRegen.Value * (count - 1));
+								}
+							}
+						}
+
+						if (amount != 0f)
+						{
+							value += amount * scaling;
 						}
 
 						return value;
@@ -647,6 +677,15 @@ namespace TPDespair.ZetItemTweaks
 								if (count > 0)
 								{
 									amount += CautiousSlug.BaseSafeRegenFraction.Value + (CautiousSlug.StackSafeRegenFraction.Value * (count - 1));
+								}
+							}
+
+							if (LeptonDaisy.appliedChanges && LeptonDaisy.BaseHoldoutRegenFraction.Value > 0f)
+							{
+								int count = self.GetBuffCount(LeptonDaisy.RegenBuff);
+								if (count > 0)
+								{
+									amount += LeptonDaisy.BaseHoldoutRegenFraction.Value + (LeptonDaisy.StackHoldoutRegenFraction.Value * (count - 1));
 								}
 							}
 						}

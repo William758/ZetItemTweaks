@@ -25,6 +25,7 @@ namespace TPDespair.ZetItemTweaks
 
 			OldWarStealthKit.EvadeBuff = Buffs.StealthEvade;
 			RoseBuckler.MomentumBuff = Buffs.SprintMomentum;
+			LeptonDaisy.RegenBuff = Buffs.LeptonRegen;
 			BerzerkersPauldron.MultiKillBuff = Buffs.MultiKill;
 			Aegis.BarrierBuff = Buffs.BarrierArmor;
 			FrostRelic.IndicatorBuff = Buffs.IcicleIndicator;
@@ -58,6 +59,7 @@ namespace TPDespair.ZetItemTweaks
 		{
 			public static BuffDef StealthEvade;
 			public static BuffDef SprintMomentum;
+			public static BuffDef LeptonRegen;
 			public static BuffDef MultiKill;
 			public static BuffDef BarrierArmor;
 			public static BuffDef IcicleIndicator;
@@ -85,6 +87,15 @@ namespace TPDespair.ZetItemTweaks
 				SprintMomentum.iconSprite = Sprites.SprintArmor;
 
 				buffDefs.Add(SprintMomentum);
+
+				LeptonRegen = ScriptableObject.CreateInstance<BuffDef>();
+				LeptonRegen.name = "ZetLeptonRegen";
+				LeptonRegen.buffColor = new Color(0.65f, 1f, 0.25f);
+				LeptonRegen.canStack = true;
+				LeptonRegen.isDebuff = false;
+				LeptonRegen.iconSprite = Sprites.LeptonAura;
+
+				buffDefs.Add(LeptonRegen);
 
 				MultiKill = ScriptableObject.CreateInstance<BuffDef>();
 				MultiKill.name = "ZetMultiKill";
@@ -123,6 +134,7 @@ namespace TPDespair.ZetItemTweaks
 			public static Sprite GreenTicket;
 
 			public static Sprite SprintArmor;
+			public static Sprite LeptonAura;
 			public static Sprite SnowFlake;
 
 			public static void Create()
@@ -132,6 +144,7 @@ namespace TPDespair.ZetItemTweaks
 				GreenTicket = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texScratchTicketGreen.png");
 
 				SprintArmor = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffSprintArmor.png");
+				LeptonAura = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffLepton.png");
 				SnowFlake = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffIcicleShaded.png");
 			}
 		}

@@ -10,7 +10,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class PredatoryInstincts
 	{
-		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff", "Hayaku.VanillaRebalance", "com.NetherCrowCSOLYOO.ClassicCritAdd" };
+		public static List<string> autoCompatList = new List<string> { "Hayaku.VanillaRebalance", "com.NetherCrowCSOLYOO.ClassicCritAdd" };
 
 		public static string itemIdentifier = "PredatoryInstincts";
 		public static bool appliedChanges = false;

@@ -23,7 +23,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.1.0";
+		public const string ModVer = "1.2.0";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
@@ -78,11 +78,22 @@ namespace TPDespair.ZetItemTweaks
 			StatHooks.Init();
 
 			// T1 Items
+			//RepulsionArmorPlate.Init();
+			//TopazBrooch.Init();
+			//TritipDagger.Init();
 			LensMakersGlasses.Init();
+			//BundleofFireworks.Init();
 			BisonSteak.Init();
 			CautiousSlug.Init();
+			//Gasoline.Init();
+			//BustlingFungus.Init();
+			FocusCrystal.Init();
+			PersonalShieldGenerator.Init();
+			//StickyBomb.Init();
 
 			// T1 VoidItems
+			//NeedleTick.Init();
+			//LostSeersLenses.Init();
 			WeepingFungus.Init();
 
 			// T1 Modded Items
@@ -106,6 +117,7 @@ namespace TPDespair.ZetItemTweaks
 			ChronoBauble.Init();
 			RoseBuckler.Init();
 			RedWhip.Init();
+			LeptonDaisy.Init();
 			RazorWire.Init();
 			BerzerkersPauldron.Init();
 
@@ -116,6 +128,8 @@ namespace TPDespair.ZetItemTweaks
 
 			// T2 Modded Items
 			BlackMonolith.Init();
+			//EngineersToolbelt.Init();
+			//FaultySpotter.Init();
 
 			// T3 Items
 			AlienHead.Init();
@@ -126,12 +140,17 @@ namespace TPDespair.ZetItemTweaks
 			LaserScope.Init();
 			FrostRelic.Init();
 			BensRainCoat.Init();
+			BrainStalks.Init();
 			NkuhanasOpinion.Init();
 			UnstableTeslaCoil.Init();
 
 			// Boss Items
+			//QueensGland.Init();
 			ShatterSpleen.Init();
 			TitanicKnurl.Init();
+			//DefenseNucleus.Init();
+			//GenesisLoop();
+			Planula.Init();
 			Pearl.Init();
 			IrradiantPearl.Init();
 			LittleDisciple.Init();
@@ -447,14 +466,47 @@ namespace TPDespair.ZetItemTweaks
 			#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
-		internal static void RefreshBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration)
+		internal static void RefreshTimedBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration)
 		{
-			for (int i = 0; i < self.timedBuffs.Count; i++)
+			if (duration > 0f)
 			{
-				CharacterBody.TimedBuff timedBuff = self.timedBuffs[i];
-				if (timedBuff.buffIndex == buffIndex)
+				for (int i = 0; i < self.timedBuffs.Count; i++)
 				{
-					if (timedBuff.timer > 0.1f && timedBuff.timer < duration) timedBuff.timer = duration;
+					CharacterBody.TimedBuff timedBuff = self.timedBuffs[i];
+					if (timedBuff.buffIndex == buffIndex)
+					{
+						if (timedBuff.timer > 0.1f && timedBuff.timer < duration) timedBuff.timer = duration;
+					}
+				}
+			}
+		}
+
+		internal static void SetTimedBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration, int count)
+		{
+			self.ClearTimedBuffs(buffIndex);
+			self.SetBuffCount(buffIndex, 0);
+
+			if (duration > 0f)
+			{
+				for (int i = 0; i < count; i++)
+				{
+					self.AddTimedBuff(buffIndex, duration);
+				}
+			}
+		}
+
+		internal static void SetCooldownBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration)
+		{
+			self.ClearTimedBuffs(buffIndex);
+			self.SetBuffCount(buffIndex, 0);
+
+			if (duration > 0f)
+			{
+				float remainingDuration = duration;
+				while (remainingDuration > 0f)
+				{
+					self.AddTimedBuff(buffIndex, remainingDuration);
+					remainingDuration -= 1f;
 				}
 			}
 		}

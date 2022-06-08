@@ -231,7 +231,7 @@ namespace TPDespair.ZetItemTweaks
 
 										if (BuffRefresh.Value)
 										{
-											RefreshBuffStacks(body, MultiKillBuff.buffIndex, duration);
+											RefreshTimedBuffStacks(body, MultiKillBuff.buffIndex, duration);
 										}
 									}
 								}

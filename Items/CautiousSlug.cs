@@ -80,20 +80,20 @@ namespace TPDespair.ZetItemTweaks
 		{
 			string output = "";
 
-			if (BaseSafeRegen.Value > 0f)
+			if (BaseSafeRegenFraction.Value > 0f)
 			{
 				output += String.Format(
 					TextFragment("SAFE_REGENERATION", true),
-					ScalingText(BaseSafeRegen.Value, StackSafeRegen.Value, "flatregen", "cIsHealing")
+					ScalingText(BaseSafeRegenFraction.Value, StackSafeRegenFraction.Value, "percentregen", "cIsHealing")
 				);
 			}
-			if (BaseSafeRegenFraction.Value > 0f)
+			if (BaseSafeRegen.Value > 0f)
 			{
 				if (output != "") output += "\n";
 
 				output += String.Format(
 					TextFragment("SAFE_REGENERATION", true),
-					ScalingText(BaseSafeRegenFraction.Value, StackSafeRegenFraction.Value, "percentregen", "cIsHealing")
+					ScalingText(BaseSafeRegen.Value, StackSafeRegen.Value, "flatregen", "cIsHealing")
 				);
 			}
 
