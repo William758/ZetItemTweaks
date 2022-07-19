@@ -29,6 +29,7 @@ namespace TPDespair.ZetItemTweaks
 			BerzerkersPauldron.MultiKillBuff = Buffs.MultiKill;
 			Aegis.BarrierBuff = Buffs.BarrierArmor;
 			FrostRelic.IndicatorBuff = Buffs.IcicleIndicator;
+			PixieTube.PixieBuff = Buffs.PixiePower;
 
 			AlienHead.PickupIcon = Sprites.GreenAlien;
 			BlackMonolith.PickupIcon = Sprites.RedMonolith;
@@ -63,6 +64,7 @@ namespace TPDespair.ZetItemTweaks
 			public static BuffDef MultiKill;
 			public static BuffDef BarrierArmor;
 			public static BuffDef IcicleIndicator;
+			public static BuffDef PixiePower;
 
 			public static List<BuffDef> buffDefs = new List<BuffDef>();
 
@@ -124,6 +126,15 @@ namespace TPDespair.ZetItemTweaks
 				IcicleIndicator.iconSprite = Sprites.SnowFlake;
 
 				buffDefs.Add(IcicleIndicator);
+
+				PixiePower = ScriptableObject.CreateInstance<BuffDef>();
+				PixiePower.name = "ZetPixiePower";
+				PixiePower.buffColor = new Color(1f, 0.5f, 0.85f);
+				PixiePower.canStack = true;
+				PixiePower.isDebuff = false;
+				PixiePower.iconSprite = Sprites.PixiePower;
+
+				buffDefs.Add(PixiePower);
 			}
 		}
 
@@ -136,6 +147,7 @@ namespace TPDespair.ZetItemTweaks
 			public static Sprite SprintArmor;
 			public static Sprite LeptonAura;
 			public static Sprite SnowFlake;
+			public static Sprite PixiePower;
 
 			public static void Create()
 			{
@@ -146,6 +158,7 @@ namespace TPDespair.ZetItemTweaks
 				SprintArmor = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffSprintArmor.png");
 				LeptonAura = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffLepton.png");
 				SnowFlake = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffIcicleShaded.png");
+				PixiePower = ZetItemTweaksPlugin.Assets.LoadAsset<Sprite>("Assets/Icons/texBuffPixie.png");
 			}
 		}
 	}

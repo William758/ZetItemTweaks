@@ -54,7 +54,7 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Hide associated activity buff.
 ```
 
-### Scratch Ticket (Mystics Items)
+### Scratch Ticket (Mystic's Items)
 
 ```
 - Unchanged. (configuration to set item tier to green added)
@@ -200,10 +200,16 @@ To use the changes from this mod, disable the changes made in the other mod and 
 - Missile deals 40% (+25% per stack) TOTAL damage. (from 40% (+40% per stack))
 ```
 
-### Black Monolith (Mystics Items)
+### Black Monolith (Mystic's Items)
 
 ```
 - Unchanged. (configuration to set item tier to red added)
+```
+
+### Pixie Tube (Tinker's Satchel)
+
+```
+- Unchanged. (configuration to visually merge buffs added)
 ```
 
 ### Alien Head
@@ -338,6 +344,16 @@ Requires Bepinex and HookGenPatcher.
 Use r2modman or place inside of Risk of Rain 2/Bepinex/Plugins/
 
 ## Changelog:
+
+**1.2.1**
+
+```
+Added Item Support:
+- Unchanged : PixieTube.
+
+WarHorn:
+- Fixed attack speed always applying without buff.
+```
 
 **1.2.0**
 

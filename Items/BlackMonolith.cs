@@ -34,18 +34,18 @@ namespace TPDespair.ZetItemTweaks
 		private static void SetupConfig()
 		{
 			EnableChanges = ConfigEntry(
-				itemIdentifier, "EnableChanges", 1,
+				itemIdentifier, "EnableChanges", 0,
 				SectionEnableDesc
 			);
 			RedTier = ConfigEntry(
-				itemIdentifier, "RedTier", false,
+				itemIdentifier, "RedTier", true,
 				"Change item to red tier."
 			);
 		}
 
 		private static void ModifyItem()
 		{
-			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
+			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, "com.themysticsword.mysticsitems", Feedback.LogAll | Feedback.Invert)) return;
 
 			bool modified = false;
 
@@ -63,8 +63,8 @@ namespace TPDespair.ZetItemTweaks
 
 				if (modified)
 				{
-					ModifyCount++;
-					TweakCount++;
+					ModifiedItemDefCount++;
+					AddTweakedItem(itemIdentifier);
 					appliedChanges = true;
 				}
 			}

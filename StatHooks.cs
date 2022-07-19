@@ -95,13 +95,12 @@ namespace TPDespair.ZetItemTweaks
 
 							if (WarHorn.appliedChanges && WarHorn.BaseBuffMove.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.EnergizedOnEquipmentUse);
-								if (count > 0)
+								if (self.HasBuff(RoR2Content.Buffs.Energized))
 								{
-									if (self.HasBuff(RoR2Content.Buffs.Energized))
-									{
-										value += WarHorn.BaseBuffMove.Value + (WarHorn.StackBuffMove.Value * (count - 1));
-									}
+									int count = inventory.GetItemCount(RoR2Content.Items.EnergizedOnEquipmentUse);
+									count = Mathf.Max(1, count);
+
+									value += WarHorn.BaseBuffMove.Value + (WarHorn.StackBuffMove.Value * (count - 1));
 								}
 							}
 
@@ -478,9 +477,11 @@ namespace TPDespair.ZetItemTweaks
 
 							if (WarHorn.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.EnergizedOnEquipmentUse);
-								if (count > 0)
+								if (self.HasBuff(RoR2Content.Buffs.Energized))
 								{
+									int count = inventory.GetItemCount(RoR2Content.Items.EnergizedOnEquipmentUse);
+									count = Mathf.Max(1, count);
+
 									float targetValue = WarHorn.BaseBuffAtkSpd.Value + (WarHorn.StackBuffAtkSpd.Value * (count - 1));
 
 									value += targetValue - 0.7f;

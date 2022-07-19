@@ -106,7 +106,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void ModifyItem()
 		{
-			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
+			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList, Feedback.LogAll)) return;
 
 			bool modified = false;
 
@@ -140,7 +140,7 @@ namespace TPDespair.ZetItemTweaks
 
 			if (modified)
 			{
-				ModifyCount++;
+				ModifiedItemDefCount++;
 			}
 		}
 

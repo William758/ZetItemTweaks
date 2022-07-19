@@ -36,6 +36,7 @@ namespace TPDespair.ZetItemTweaks
 
 			if (EnableChanges.Value > 0)
 			{
+				OnBuffCatalogPreInit += ModifyBuff;
 				OnLateSetup += LateSetup;
 			}
 		}
@@ -89,6 +90,28 @@ namespace TPDespair.ZetItemTweaks
 				itemIdentifier, "IcicleDamage", 2f,
 				"Damage per second added to storm per icicle."
 			);
+		}
+
+		private static void ModifyBuff()
+		{
+			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList, Feedback.None)) return;
+
+			if (!IcicleIndicator.Value) return;
+
+			if (!PluginLoaded("com.Wolfo.WolfoQualityOfLife")) return;
+
+			BuffDef buffDef = FindBuffDefPreCatalogInit("visual_FrostRelicGrowth");
+			if (buffDef)
+			{
+				if (!buffDef.isHidden)
+				{
+					buffDef.isHidden = true;
+
+					LogInfo(itemIdentifier + " :: Hiding buff : visual_FrostRelicGrowth");
+
+					ModifiedBuffDefCount++;
+				}
+			}
 		}
 
 		private static void LateSetup()

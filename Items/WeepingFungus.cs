@@ -37,7 +37,15 @@ namespace TPDespair.ZetItemTweaks
 			if (EnableChanges.Value > 0)
 			{
 				BuffDef buffDef = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/MushroomVoidActive");
-				buffDef.isHidden = !ActivityIndicator.Value;
+				if (buffDef)
+				{
+					if (buffDef.isHidden == ActivityIndicator.Value)
+					{
+						buffDef.isHidden = !ActivityIndicator.Value;
+
+						ModifiedBuffDefCount++;
+					}
+				}
 
 				OnLateSetup += LateSetup;
 			}

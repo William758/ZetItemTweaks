@@ -44,6 +44,7 @@ namespace TPDespair.ZetItemTweaks
 
 			if (EnableChanges.Value > 0)
 			{
+				OnBuffCatalogPreInit += ModifyBuff;
 				OnLateSetup += LateSetup;
 			}
 		}
@@ -109,6 +110,28 @@ namespace TPDespair.ZetItemTweaks
 				itemIdentifier, "StackMomentumArmor", 15f,
 				"Armor gained from maximum momentum per stack."
 			);
+		}
+
+		private static void ModifyBuff()
+		{
+			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList, Feedback.None)) return;
+
+			if (!UsingMomentum()) return;
+
+			if (!PluginLoaded("com.Wolfo.WolfoQualityOfLife")) return;
+
+			BuffDef buffDef = FindBuffDefPreCatalogInit("visual_SprintArmor");
+			if (buffDef)
+			{
+				if (!buffDef.isHidden)
+				{
+					buffDef.isHidden = true;
+
+					LogInfo(itemIdentifier + " :: Hiding buff : visual_SprintArmor");
+
+					ModifiedBuffDefCount++;
+				}
+			}
 		}
 
 		private static void LateSetup()
@@ -213,14 +236,14 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		internal static int GetBehaviorMomentumValue()
+		internal static bool UsingMomentum()
 		{
 			if (BaseMomentumMove.Value > 0f || BaseMomentumArmor.Value > 0f)
 			{
-				return MaxMomentum.Value;
+				return true;
 			}
 
-			return 0;
+			return false;
 		}
 
 		private static void HandleItemBehavior(CharacterBody body)
@@ -275,7 +298,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class SprintArmorBehavior : CharacterBody.ItemBehavior
 	{
-		public int maxMomentum = 5;
+		public int maxMomentum = 0;
 		public int currentMomentum = 0;
 
 		public float tracker = 0f;
@@ -292,7 +315,7 @@ namespace TPDespair.ZetItemTweaks
 
 		public void OnEnable()
 		{
-			maxMomentum = RoseBuckler.GetBehaviorMomentumValue();
+			maxMomentum = RoseBuckler.UsingMomentum() ? RoseBuckler.MaxMomentum.Value : 0;
 
 			sprintThreshold = Mathf.Max(0f, RoseBuckler.SprintThreshold.Value);
 

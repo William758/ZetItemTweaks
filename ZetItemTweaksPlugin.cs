@@ -23,7 +23,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.2.0";
+		public const string ModVer = "1.2.1";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
@@ -31,24 +31,27 @@ namespace TPDespair.ZetItemTweaks
 		public static Dictionary<string, string> Fragments = new Dictionary<string, string>();
 
 		public static List<string> ConfigKeys = new List<string>();
+		public static List<string> TweakedItems = new List<string>();
 
 		public static ConfigFile configFile;
 		public static ManualLogSource logSource;
 
 		public static ConfigEntry<bool> EnableAutoCompat { get; set; }
 		public static ConfigEntry<bool> ExplicitEnable { get; set; }
+		public static ConfigEntry<bool> LogMissingPlugins { get; set; }
 		public static ConfigEntry<bool> GenerateOverrideText { get; set; }
 
 		internal static string SectionEnableDesc = "Enable item changes. 0 = Disabled, 1 = AutoCompat, 2 = Force Enabled";
 
+		public static Action OnBuffCatalogPreInit;
 		public static Action OnItemCatalogPreInit;
 		public static Action OnLateSetup;
 
 		internal static string LastPluginChecked = "";
 		internal static string SetupPhase = "";
 		internal static int ConfigCount = 0;
-		internal static int ModifyCount = 0;
-		internal static int TweakCount = 0;
+		internal static int ModifiedBuffDefCount = 0;
+		internal static int ModifiedItemDefCount = 0;
 
 
 
@@ -66,6 +69,7 @@ namespace TPDespair.ZetItemTweaks
 
 			SetupConfig();
 
+			On.RoR2.BuffCatalog.Init += BuffCatalogInit;
 			On.RoR2.ItemCatalog.Init += ItemCatalogInit;
 			RoR2Application.onLoad += LateSetup;
 
@@ -130,6 +134,7 @@ namespace TPDespair.ZetItemTweaks
 			BlackMonolith.Init();
 			//EngineersToolbelt.Init();
 			//FaultySpotter.Init();
+			PixieTube.Init();
 
 			// T3 Items
 			AlienHead.Init();
@@ -246,6 +251,10 @@ namespace TPDespair.ZetItemTweaks
 				section, "ExplicitEnable", false,
 				"Only enable item changes for sections that are set to force enabled. EnableAutoCompat setting will be ignored."
 			);
+			LogMissingPlugins = ConfigEntry(
+				section, "LogMissingPlugins", true,
+				"Log missing plugin if modded item change enabled but plugin not loaded."
+			);
 			GenerateOverrideText = ConfigEntry(
 				section, "GenerateOverrideText", false,
 				"Create a config entry for each item that allows disabling item description text replacement."
@@ -253,7 +262,23 @@ namespace TPDespair.ZetItemTweaks
 		}
 
 
-		
+
+		private static void BuffCatalogInit(On.RoR2.BuffCatalog.orig_Init orig)
+		{
+			Action action = OnBuffCatalogPreInit;
+			if (action != null)
+			{
+				SetupPhase = "ModifyBuff";
+				LogInfo("BuffCatalog Initializing!");
+
+				action();
+
+				SetupPhase = "";
+			}
+
+			orig();
+		}
+
 		private static void ItemCatalogInit(On.RoR2.ItemCatalog.orig_Init orig)
 		{
 			Action action = OnItemCatalogPreInit;
@@ -269,21 +294,25 @@ namespace TPDespair.ZetItemTweaks
 
 			orig();
 		}
-		
+
 		private static void LateSetup()
 		{
 			Action action = OnLateSetup;
 			if (action != null)
 			{
 				SetupPhase = "LateSetup";
-				LogInfo("LateSetup Initialized!");
+				LogInfo("LateSetup Initializing!");
 
 				action();
 
-				PostSetupInfo();
-
 				SetupPhase = "";
 			}
+
+			LogInfo("Setup Complete!");
+			LogInfo("Created [" + ConfigCount + "] config entries.");
+			LogInfo("Modified [" + ModifiedBuffDefCount + "] buffDefs.");
+			LogInfo("Modified [" + ModifiedItemDefCount + "] itemDefs.");
+			LogInfo("Tweaked [" + TweakedItems.Count + "] items.");
 		}
 
 
@@ -375,24 +404,67 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		internal static bool ProceedChanges(string identifier, int enabled, List<string> modList, bool silent = false)
+		public enum Feedback
 		{
+			None = 0,
+			Invert = 1,
+			Tweaked = 2,
+			LogInfo = 4,
+			LogWarn = 8,
+
+			Default = 14,
+			LogAll = 12
+		}
+
+		internal static bool ProceedChanges(string identifier, int enabled, string mod, Feedback feedback = Feedback.Default)
+		{
+			return ProceedChanges(identifier, enabled, new List<string>() { mod }, feedback);
+		}
+
+		internal static bool ProceedChanges(string identifier, int enabled, List<string> modList, Feedback feedback = Feedback.Default)
+		{
+			enabled = Mathf.Max(0, Mathf.Min(2, enabled));
+
+			bool invertList = (feedback & Feedback.Invert) != 0;
+			bool logWarn = (feedback & Feedback.LogWarn) != 0;
+
+			if (invertList)
+			{
+				foreach (string guid in modList)
+				{
+					if (!PluginLoaded(guid))
+					{
+						if (logWarn && LogMissingPlugins.Value) LogWarn(identifier + " :: Disabled because " + LastPluginChecked + " is not installed!");
+
+						return false;
+					}
+				}
+			}
+
+			bool logInfo = (feedback & Feedback.LogInfo) != 0;
+			bool tweaked = (feedback & Feedback.Tweaked) != 0;
+
+			if (enabled == 2)
+			{
+				if (logInfo) LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
+				if (tweaked) AddTweakedItem(identifier);
+
+				return true;
+			}
+
 			if (enabled == 1)
 			{
 				if (ExplicitEnable.Value)
 				{
-					if (!silent) LogInfo(identifier + " :: Disabled because it was not explicitly enabled!");
+					if (logInfo) LogInfo(identifier + " :: Disabled because it was not explicitly enabled!");
 
 					return false;
 				}
 
-				if (!EnableAutoCompat.Value || modList.Count == 0)
+				if (!EnableAutoCompat.Value || modList.Count == 0 || invertList)
 				{
-					if (!silent)
-					{
-						LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
-						if (SetupPhase == "LateSetup") TweakCount++;
-					}
+					if (logInfo) LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
+					if (tweaked) AddTweakedItem(identifier);
 
 					return true;
 				}
@@ -401,34 +473,29 @@ namespace TPDespair.ZetItemTweaks
 				{
 					if (PluginLoaded(guid))
 					{
-						if (!silent) LogWarn(identifier + " :: Disabled because " + LastPluginChecked + " is installed!");
+						if (logWarn) LogWarn(identifier + " :: Disabled because " + LastPluginChecked + " is installed!");
 
 						return false;
 					}
 				}
 
-				if (!silent)
-				{
-					LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
-					if (SetupPhase == "LateSetup") TweakCount++;
-				}
-
-				return true;
-			}
-			else if (enabled == 2)
-			{
-				if (!silent)
-				{
-					LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
-					if (SetupPhase == "LateSetup") TweakCount++;
-				}
+				if (logInfo) LogInfo(identifier + " :: Proceed with " + SetupPhase + ".");
+				if (tweaked) AddTweakedItem(identifier);
 
 				return true;
 			}
 
-			if (!silent) LogWarn(identifier + " :: Disabled for unknown reason!");
+			LogWarn(identifier + " :: Disabled - Unknown Reason!");
 
 			return false;
+		}
+
+		internal static void AddTweakedItem(string identifier)
+		{
+			if (!TweakedItems.Contains(identifier))
+			{
+				TweakedItems.Add(identifier);
+			}
 		}
 
 		internal static bool PluginLoaded(string key)
@@ -439,15 +506,15 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		private static void PostSetupInfo()
+		internal static BuffDef FindBuffDefPreCatalogInit(string identifier)
 		{
-			LogInfo("LateSetup Complete!");
-			LogInfo("Created [" + ConfigCount + "] config entries.");
-			LogInfo("Modified [" + ModifyCount + "] itemDefs.");
-			LogInfo("Tweaked [" + TweakCount + "] items.");
+			foreach (BuffDef buffDef in ContentManager.buffDefs)
+			{
+				if (buffDef.name == identifier) return buffDef;
+			}
+
+			return null;
 		}
-
-
 
 		internal static ItemDef FindItemDefPreCatalogInit(string identifier)
 		{
