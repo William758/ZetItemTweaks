@@ -78,11 +78,27 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("HEAL_HEALTH_FROM_DAMAGE", "Taking damage heals you for {0} <style=cIsHealing>health</style>.");
 				RegisterFragment("HEAL_BARRIER_FROM_DAMAGE", "Taking damage generates {0} <style=cIsHealing>barrier</style>.");
 				RegisterFragment("HEAL_BOTH_FROM_DAMAGE", "Taking damage heals you for {0} <style=cIsHealing>health</style> and generates {1} <style=cIsHealing>barrier</style>.");
+				RegisterFragment("PLANULA_PICKUP_HEAL", "Taking damage heals you.");
+				RegisterFragment("PLANULA_PICKUP_BARRIER", "Taking damage grants barrier.");
 				RegisterToken("ITEM_PARENTEGG_DESC", DescriptionText());
 				RegisterToken("ITEM_PARENTEGG_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("HEAL_HEALTH_FROM_DAMAGE", "Receber dano cura você por {0} de <style=cIsHealing>saúde</style>.");
+				RegisterFragment("HEAL_BARRIER_FROM_DAMAGE", "Receber dano cura você por {0} de <style=cIsHealing>barreira</style>.");
+				RegisterFragment("HEAL_BOTH_FROM_DAMAGE", "Receber dano cura você por {0} de <style=cIsHealing>saúde</style> e gera {1} de <style=cIsHealing>barreira</style>.");
+				RegisterFragment("PLANULA_PICKUP_HEAL", "Receber dano cura você.");
+				RegisterFragment("PLANULA_PICKUP_BARRIER", "Receber dano conce uma barreira.");
+				RegisterToken("ITEM_PARENTEGG_DESC", DescriptionText());
+				RegisterToken("ITEM_PARENTEGG_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -115,7 +131,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}
@@ -124,14 +140,14 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (BaseHeal.Value > 0f)
 			{
-				return "Taking damage heals you.";
+				return TextFragment("PLANULA_PICKUP_HEAL");
 			}
 			if (BaseBarrier.Value > 0f)
 			{
-				return "Taking damage grants barrier.";
+				return TextFragment("PLANULA_PICKUP_BARRIER");
 			}
 
-			return "No effect.";
+			return TextFragment("PICKUP_NO_EFFECT");
 		}
 
 

@@ -93,11 +93,23 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("TRACKWISP_DAMAGE", "Fire a <style=cIsDamage>tracking wisp</style> at an enemy within {0} that deals {1} base damage.");
 				RegisterFragment("TRACKWISP_RECHARGE", "\nFires {0} while sprinting.");
 				RegisterFragment("TRACKWISP_RECHARGE_REDUCE", "\nFire {0} <style=cStack>(-{1} per stack)</style> while sprinting.");
 				RegisterFragment("TRACKWISP_DETAIL", "\n<style=cStack>(Fire rate scales with movement speed)</style>");
 				RegisterToken("ITEM_SPRINTWISP_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("TRACKWISP_DAMAGE", "Dispara <style=cIsDamage>espíritos rastreadores</style> em um inimigo dentro de {0} que causa {1} de dano base.");
+				RegisterFragment("TRACKWISP_RECHARGE", "\nDispara {0} ao correr.");
+				RegisterFragment("TRACKWISP_RECHARGE_REDUCE", "\nDispara {0} <style=cStack>(-{1} por acúmulo)</style> ao correr.");
+				RegisterFragment("TRACKWISP_DETAIL", "\n<style=cStack>(A taxa de disparo aumenta com a velocidade de movimento)</style>");
+				RegisterToken("ITEM_SPRINTWISP_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

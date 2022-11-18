@@ -81,9 +81,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("POLYLUTE", "{0} chance to fire <style=cIsDamage>lightning</style> for {1} TOTAL damage up to {2} times.");
 				RegisterFragment("POLYLUTE_CORRUPTION", "\n<style=cIsVoid>Corrupts all Ukuleles</style>.");
 				RegisterToken("ITEM_CHAINLIGHTNINGVOID_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("POLYLUTE", "{0} de chande de disparar um <style=cIsDamage>raio</style> e causar {1} de dano TOTAL em até {2} vezes.");
+				RegisterFragment("POLYLUTE_CORRUPTION", "\n<style=cIsVoid>Corrompe todos os Ukeleles</style>.");
+				RegisterToken("ITEM_CHAINLIGHTNINGVOID_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

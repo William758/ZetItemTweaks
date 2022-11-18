@@ -144,12 +144,31 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("SPRINT_MOMENTUM", "\n<style=cIsUtility>Sprinting</style> generates <style=cIsUtility>momentum</style>, granting up to {0}.");
 				RegisterFragment("MOMENTUM_ARMOR", "{0} <style=cIsHealing>armor</style>");
 				RegisterFragment("MOMENTUM_MOVESPEED", "{0} <style=cIsUtility>movement speed</style>");
 				RegisterFragment("MOMENTUM_BOTH", "{0} <style=cIsUtility>movement speed</style> and {1} <style=cIsHealing>armor</style>");
+				RegisterFragment("BUCKLER_PICKUP_MOMENTUM", "Sprinting builds momentum.");
+				RegisterFragment("BUCKLER_PICKUP_ARMOR", "Reduce incoming damage.");
+				RegisterFragment("BUCKLER_PICKUP_SPEED", "Increase movement speed.");
 				RegisterToken("ITEM_SPRINTARMOR_DESC", DescriptionText());
 				RegisterToken("ITEM_SPRINTARMOR_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SPRINT_MOMENTUM", "\n<style=cIsUtility>Correr</style> gera <style=cIsUtility>impulso</style>, concedendo até {0}.");
+				RegisterFragment("MOMENTUM_ARMOR", "{0} de <style=cIsHealing>armadura</style>");
+				RegisterFragment("MOMENTUM_MOVESPEED", "{0} de <style=cIsUtility>velocidade de movimento</style>");
+				RegisterFragment("MOMENTUM_BOTH", "{0} de <style=cIsUtility>velocidade de movimento</style> e {1} de <style=cIsHealing>armadura</style>");
+				RegisterFragment("BUCKLER_PICKUP_MOMENTUM", "Correr gera impulso.");
+				RegisterFragment("BUCKLER_PICKUP_ARMOR", "Reduzindo os danos recebidos.");
+				RegisterFragment("BUCKLER_PICKUP_SPEED", "Aumento a velocidade de movimento.");
+				RegisterToken("ITEM_SPRINTARMOR_DESC", DescriptionText());
+				RegisterToken("ITEM_SPRINTARMOR_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -210,7 +229,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}
@@ -219,19 +238,19 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (MaxMomentum.Value > 0 && (BaseMomentumMove.Value > 0f || BaseMomentumArmor.Value > 0f))
 			{
-				return "Sprinting builds momentum.";
+				return TextFragment("BUCKLER_PICKUP_MOMENTUM");
 			}
 
 			if (BaseArmor.Value > 0f)
 			{
-				return "Reduce incoming damage.";
+				return TextFragment("BUCKLER_PICKUP_ARMOR");
 			}
 			if (BaseMove.Value > 0f)
 			{
-				return "Increase movement speed.";
+				return TextFragment("BUCKLER_PICKUP_SPEED");
 			}
 
-			return "No effect.";
+			return TextFragment("PICKUP_NO_EFFECT");
 		}
 
 

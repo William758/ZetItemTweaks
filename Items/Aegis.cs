@@ -89,9 +89,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("OVERHEAL_BARRIER", "Excess healing generates <style=cIsHealing>barrier</style> for {0} of the amount you <style=cIsHealing>healed</style>.");
 				RegisterFragment("BARRIER_ARMOR", "\nIncreases <style=cIsHealing>armor</style> by {0} while <style=cIsHealing>barrier</style> is active.");
 				RegisterToken("ITEM_BARRIERONOVERHEAL_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("OVERHEAL_BARRIER", "O excesso de cura gera uma <style=cIsHealing>barreira</style> em {0} do valor que você <style=cIsHealing>curou</style>.");
+				RegisterFragment("BARRIER_ARMOR", "\nAumenta a <style=cIsHealing>armadura</style> em {0} enquanto a <style=cIsHealing>barreira</style> estiver ativa.");
+				RegisterToken("ITEM_BARRIERONOVERHEAL_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

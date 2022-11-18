@@ -176,6 +176,8 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("IMMUNITY_CHEAT", "Become immune to <style=cIsDamage>debuffs</style>.");
 				RegisterFragment("IMMUNITY_CHEAT_BARRIER", "Prevents <style=cIsDamage>debuffs</style> and instead generates {0} <style=cIsHealing>barrier</style>.");
 				RegisterFragment("IMMUNITY_CHARGES", "Maximum of {0} <style=cIsUtility>cleanse</style> charges.");
@@ -184,8 +186,31 @@ namespace TPDespair.ZetItemTweaks
 				RegisterFragment("IMMUNITY_PROTECTION", "\nEach charge prevents <style=cIsDamage>debuffs</style> {0}.");
 				RegisterFragment("IMMUNITY_PROTECTION_BARRIER", "\nEach charge prevents <style=cIsDamage>debuffs</style> {0} and generates {1} <style=cIsHealing>barrier</style>.");
 				RegisterFragment("SAFE_REGENERATION", "\nIncreases <style=cIsHealing>health regeneration</style> by {0} while out of danger.");
+				RegisterFragment("BEN_PICKUP_CHEATBARRIER", "Prevent debuffs, instead gaining a temporary barrier.");
+				RegisterFragment("BEN_PICKUP_CHEAT", "Become immune to debuffs.");
+				RegisterFragment("BEN_PICKUP_CHARGEBARRIER", "Prevent debuffs, instead gaining a temporary barrier. Recharges over time.");
+				RegisterFragment("BEN_PICKUP_CHARGE", "Prevent debuffs. Recharges over time.");
 				RegisterToken("ITEM_IMMUNETODEBUFF_DESC", DescriptionText());
 				RegisterToken("ITEM_IMMUNETODEBUFF_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("IMMUNITY_CHEAT", "Se torne imune a <style=cIsDamage>penalidades</style>.");
+				RegisterFragment("IMMUNITY_CHEAT_BARRIER", "Previne <style=cIsDamage>penalidades</style> e, em troca, concede {0} de <style=cIsHealing>barreira</style>.");
+				RegisterFragment("IMMUNITY_CHARGES", "Máximo de {0} cargas de <style=cIsUtility>purificação</style>.");
+				RegisterFragment("IMMUNITY_RECHARGE", "\nGanhe uma carga de {0}.");
+				RegisterFragment("IMMUNITY_RECHARGE_REDUCE", "\nGanhe uma carga de {0} <style=cStack>(-{1} por acúmulo)</style>.");
+				RegisterFragment("IMMUNITY_PROTECTION", "\nCada carga previne <style=cIsDamage>penalidades</style> {0}.");
+				RegisterFragment("IMMUNITY_PROTECTION_BARRIER", "\nCada carga previne <style=cIsDamage>penalidades</style> {0} e gera uma {1} <style=cIsHealing>barreira</style>.");
+				RegisterFragment("SAFE_REGENERATION", "\nAumenta a <style=cIsHealing>regeneração de saúde</style> em {0} enquanto fora de perigo.");
+				RegisterFragment("BEN_PICKUP_CHEATBARRIER", "Previne penalidades, e, em troca, concede uma barreira temporária.");
+				RegisterFragment("BEN_PICKUP_CHEAT", "Se torna imune a penalidades.");
+				RegisterFragment("BEN_PICKUP_CHARGEBARRIER", "Previne penalidades, e, em troca, concede uma barreira temporária. Recharrega ao longo do temp.");
+				RegisterFragment("BEN_PICKUP_CHARGE", "Previne penalidades. Recharrega ao longo do tempo.");
+				RegisterToken("ITEM_IMMUNETODEBUFF_DESC", DescriptionText());
+				RegisterToken("ITEM_IMMUNETODEBUFF_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -284,22 +309,22 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (BaseBarrierRecovery.Value > 0f)
 				{
-					return "Prevent debuffs, instead gaining a temporary barrier.";
+					return TextFragment("BEN_PICKUP_CHEATBARRIER");
 				}
 				else
 				{
-					return "Become immune to debuffs.";
+					return TextFragment("BEN_PICKUP_CHEAT");
 				}
 			}
 			else
 			{
 				if (BaseBarrierRecovery.Value > 0f)
 				{
-					return "Prevent debuffs, instead gaining a temporary barrier. Recharges over time.";
+					return TextFragment("BEN_PICKUP_CHARGEBARRIER");
 				}
 				else
 				{
-					return "Prevent debuffs. Recharges over time.";
+					return TextFragment("BEN_PICKUP_CHARGE");
 				}
 			}
 		}

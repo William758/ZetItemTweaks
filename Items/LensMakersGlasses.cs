@@ -59,8 +59,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
+				RegisterFragment("GLASSES_PICKUP", "Increases critical strikes chance.");
 				RegisterToken("ITEM_CRITGLASSES_DESC", DescriptionText());
-				RegisterToken("ITEM_CRITGLASSES_PICKUP", "Increases critical strikes chance.");
+				RegisterToken("ITEM_CRITGLASSES_PICKUP", TextFragment("GLASSES_PICKUP"));
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("GLASSES_PICKUP", "Aumenta a chance de acertos críticos.");
+				RegisterToken("ITEM_CRITGLASSES_DESC", DescriptionText());
+				RegisterToken("ITEM_CRITGLASSES_PICKUP", TextFragment("GLASSES_PICKUP"));
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

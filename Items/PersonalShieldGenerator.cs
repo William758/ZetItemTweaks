@@ -59,7 +59,15 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterToken("ITEM_PERSONALSHIELD_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterToken("ITEM_PERSONALSHIELD_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

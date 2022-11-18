@@ -74,8 +74,17 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("HARPOON", "Killing an enemy increases <style=cIsUtility>movement speed</style> by {0}, fading over {1} seconds.");
 				RegisterToken("ITEM_MOVESPEEDONKILL_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("HARPOON", "Abater um inimigo aumenta a <style=cIsUtility>velocidade de movimento</style> em {0}, que se esvai em {1} segundos.");
+				RegisterToken("ITEM_MOVESPEEDONKILL_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

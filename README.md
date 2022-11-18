@@ -343,7 +343,17 @@ Requires Bepinex and HookGenPatcher.
 
 Use r2modman or place inside of Risk of Rain 2/Bepinex/Plugins/
 
+## Credits:
+
+Brazilian Portuguese translation by SpookyGabe#9476.
+
 ## Changelog:
+
+**1.2.2**
+
+```
+Added Brazilian Portuguese translation by SpookyGabe#9476.
+```
 
 **1.2.1**
 

@@ -139,6 +139,8 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("HEALNOVA_AMOUNT", "\nRelease <style=cIsHealing>novas</style> while inside a holdout zone, healing for {0} maximum health.");
 				RegisterFragment("HEALNOVA_COUNT", "\nOccurs {0} times.");
 				RegisterFragment("HEALNOVA_COUNT_NORMALIZED", "\nOccurs {0} times every 60 seconds.");
@@ -146,8 +148,26 @@ namespace TPDespair.ZetItemTweaks
 				RegisterFragment("HEALNOVA_INTERVAL_REDUCE", "\nOccurs {0} <style=cStack>(-{1} per stack)</style>.");
 				RegisterFragment("HEALNOVA_CONTINUOUS", "\n<style=cStack>(Continues to pulse after charging phase)</style>");
 				RegisterFragment("HOLDOUT_REGENERATION", "\nIncreases <style=cIsHealing>health regeneration</style> by {0} while inside a holdout zone.");
+				RegisterFragment("DAISY_PICKUP_PULSE", "Holdout zones periodically release a healing nova.");
+				RegisterFragment("DAISY_PICKUP_REGEN", "Regenerate health while inside a holdout zone.");
 				RegisterToken("ITEM_TPHEALINGNOVA_DESC", DescriptionText());
 				RegisterToken("ITEM_TPHEALINGNOVA_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("HEALNOVA_AMOUNT", "\nLibera <style=cIsHealing>supernovas de cura</style> enquanto estiver dentro de uma zona de espera, curando você por {0} da saúde máxima.");
+				RegisterFragment("HEALNOVA_COUNT", "\nOcorre {0} vezes.");
+				RegisterFragment("HEALNOVA_COUNT_NORMALIZED", "\nOcorre {0} vezes a cada 60 segundos.");
+				RegisterFragment("HEALNOVA_INTERVAL", "\nOcorre {0}.");
+				RegisterFragment("HEALNOVA_INTERVAL_REDUCE", "\nOcorre {0} <style=cStack>(-{1} por acúmulo)</style>.");
+				RegisterFragment("HEALNOVA_CONTINUOUS", "\n<style=cStack>(Continua a pulsar após a fase de carregamento)</style>");
+				RegisterFragment("HOLDOUT_REGENERATION", "\nAumenta a <style=cIsHealing>regeneração de saúde</style> em {0} enquanto estiver dentro de uma zona de espera.");
+				RegisterFragment("DAISY_PICKUP_PULSE", "Zonas de espera liberam periodicamente uma supernova de cura.");
+				RegisterFragment("DAISY_PICKUP_REGEN", "Regenere a saúde enquanto estiver dentro de uma zona de espera.");
+				RegisterToken("ITEM_TPHEALINGNOVA_DESC", DescriptionText());
+				RegisterToken("ITEM_TPHEALINGNOVA_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -222,7 +242,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}
@@ -231,14 +251,14 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (PulseMode.Value > 0)
 			{
-				return "Holdout zones periodically release a healing nova.";
+				return TextFragment("DAISY_PICKUP_PULSE");
 			}
 			if (BaseHoldoutRegen.Value > 0f || BaseHoldoutRegenFraction.Value > 0f)
 			{
-				return "Regenerate health while inside a holdout zone.";
+				return TextFragment("DAISY_PICKUP_REGEN");
 			}
 
-			return "No effect.";
+			return TextFragment("PICKUP_NO_EFFECT");
 		}
 
 

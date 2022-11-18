@@ -113,9 +113,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default"; 
+				
 				RegisterFragment("DEATHMARK", "Enemies with at least {0} debuffs are <style=cIsDamage>marked for death</style> {1}, increasing damage taken by {2}.");
+				RegisterFragment("DEATHMARK_PICKUP", "Enemies with at least {0} debuffs are marked for death, taking bonus damage.");
 				RegisterToken("ITEM_DEATHMARK_DESC", DescriptionText());
 				RegisterToken("ITEM_DEATHMARK_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("DEATHMARK", "Inimigos com pelo menos {0} penalidades são <style=cIsDamage>marcados para morrer</style> {1}, aumentando o dano recebido em {2}.");
+				RegisterFragment("DEATHMARK_PICKUP", "Inimigos com pelo menos {0} penalidades são marcados para morrer, recebendo bônus de dano.");
+				RegisterToken("ITEM_DEATHMARK_DESC", DescriptionText());
+				RegisterToken("ITEM_DEATHMARK_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -135,7 +147,10 @@ namespace TPDespair.ZetItemTweaks
 
 		private static string PickupText()
 		{
-			return "Enemies with at least " + CountTrigger.Value + " debuffs are marked for death, taking bonus damage.";
+			return String.Format(
+				TextFragment("DEATHMARK_PICKUP"),
+				ScalingText(CountTrigger.Value, "flat")
+			);
 		}
 
 

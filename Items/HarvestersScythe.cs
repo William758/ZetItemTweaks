@@ -73,9 +73,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("HEAL_ON_CRIT", "\n<style=cIsDamage>Critical strikes</style> <style=cIsHealing>heal</style> for {0} <style=cIsHealing>health</style>.");
+				RegisterFragment("SCYTHE_PICKUP", "Critical strikes heal you.");
 				RegisterToken("ITEM_HEALONCRIT_DESC", DescriptionText());
-				RegisterToken("ITEM_HEALONCRIT_PICKUP", "Critical strikes heal you.");
+				RegisterToken("ITEM_HEALONCRIT_PICKUP", TextFragment("SCYTHE_PICKUP"));
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("HEAL_ON_CRIT", "\nOs <style=cIsDamage>Acertos Críticos</style> <style=cIsHealing>curam</style> em {0} de <style=cIsHealing>saúde</style>.");
+				RegisterFragment("SCYTHE_PICKUP", "Os Acertos Críticos curam você.");
+				RegisterToken("ITEM_HEALONCRIT_DESC", DescriptionText());
+				RegisterToken("ITEM_HEALONCRIT_PICKUP", TextFragment("SCYTHE_PICKUP"));
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

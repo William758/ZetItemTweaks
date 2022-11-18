@@ -91,9 +91,25 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("REGEN_ON_KILL", "\nKilling an enemy increases <style=cIsHealing>health regeneration</style> by {0} for {1} seconds.");
+				RegisterFragment("STEAK_PICKUP_HEALTHREGEN", "Increase max health. Boost regen on kill.");
+				RegisterFragment("STEAK_PICKUP_HEALTH", "Increase max health.");
+				RegisterFragment("STEAK_PICKUP_REGEN", "Boost regen on kill.");
 				RegisterToken("ITEM_FLATHEALTH_DESC", DescriptionText());
 				RegisterToken("ITEM_FLATHEALTH_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("REGEN_ON_KILL", "\nAbater um inimigo aumenta a <style=cIsHealing>regeneração de saúde</style> em {0} por {1} segundos.");
+				RegisterFragment("STEAK_PICKUP_HEALTHREGEN", "Aumenta a saúde máxima. Concede um bônus de regeneração no abate.");
+				RegisterFragment("STEAK_PICKUP_HEALTH", "Aumenta a saúde máxima.");
+				RegisterFragment("STEAK_PICKUP_REGEN", "Concede um bônus de regeneração no abate.");
+				RegisterToken("ITEM_FLATHEALTH_DESC", DescriptionText());
+				RegisterToken("ITEM_FLATHEALTH_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -120,7 +136,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}
@@ -133,22 +149,22 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (regenOnKill)
 				{
-					return "Increase max health. Boost regen on kill.";
+					return TextFragment("STEAK_PICKUP_HEALTHREGEN");
 				}
 				else
 				{
-					return "Increase max health.";
+					return TextFragment("STEAK_PICKUP_HEALTH");
 				}
 			}
 			else
 			{
 				if (regenOnKill)
 				{
-					return "Boost regen on kill.";
+					return TextFragment("STEAK_PICKUP_REGEN");
 				}
 				else
 				{
-					return "No effect.";
+					return TextFragment("PICKUP_NO_EFFECT");
 				}
 			}
 		}

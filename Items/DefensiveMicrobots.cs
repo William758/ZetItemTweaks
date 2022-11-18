@@ -154,11 +154,23 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default"; 
+				
 				RegisterFragment("MICROBOT_DEFENSE", "Shoot down {0} projectiles within {1}.");
 				RegisterFragment("MICROBOT_RECHARGE", "\nRecharges {0}.");
 				RegisterFragment("MICROBOT_RECHARGE_REDUCE", "\nRecharges {0} <style=cStack>(-{1} per stack)</style>.");
 				RegisterFragment("MICROBOT_DETAIL", "\n<style=cStack>(Recharge rate scales with attack speed)</style>");
 				RegisterToken("ITEM_CAPTAINDEFENSEMATRIX_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("MICROBOT_DEFENSE", "Derruba {0} projéteis próximos dentro de {1}.");
+				RegisterFragment("MICROBOT_RECHARGE", "\nRecarrega {0}.");
+				RegisterFragment("MICROBOT_RECHARGE_REDUCE", "\nRecarrega {0} <style=cStack>(-{1} por acúmulo)</style>.");
+				RegisterFragment("MICROBOT_DETAIL", "\n<style=cStack>(A taxa de recarga escala com a velocidade de ataque)</style>");
+				RegisterToken("ITEM_CAPTAINDEFENSEMATRIX_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

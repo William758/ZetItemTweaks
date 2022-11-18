@@ -79,9 +79,27 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("SAFE_MOVESPEED", "\nIncreases <style=cIsUtility>movement speed</style> by {0} while out of combat.");
+				RegisterFragment("WHIP_PICKUP_PEACESPEED", "Move fast out of combat.");
+				RegisterFragment("WHIP_PICKUP_SPEEDARMOR", "Move faster and take less damage.");
+				RegisterFragment("WHIP_PICKUP_SPEED", "Move faster.");
+				RegisterFragment("WHIP_PICKUP_ARMOR", "Take less damage.");
 				RegisterToken("ITEM_SPRINTOUTOFCOMBAT_DESC", DescriptionText());
 				RegisterToken("ITEM_SPRINTOUTOFCOMBAT_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SAFE_MOVESPEED", "\nAumenta a <style=cIsUtility>velocidade de movimento</style> em {0} enquanto fora do combate.");
+				RegisterFragment("WHIP_PICKUP_PEACESPEED", "Retire-se do combate rapidamente.");
+				RegisterFragment("WHIP_PICKUP_SPEEDARMOR", "Mova-se mais rápido e receba menos dano.");
+				RegisterFragment("WHIP_PICKUP_SPEED", "Mova-se mais rápido.");
+				RegisterFragment("WHIP_PICKUP_ARMOR", "Receba menos dano.");
+				RegisterToken("ITEM_SPRINTOUTOFCOMBAT_DESC", DescriptionText());
+				RegisterToken("ITEM_SPRINTOUTOFCOMBAT_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -118,7 +136,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}
@@ -127,22 +145,22 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (BaseSafeMove.Value > 0f)
 			{
-				return "Move fast out of combat.";
+				return TextFragment("WHIP_PICKUP_PEACESPEED");
 			}
 			if (BaseMove.Value > 0f && BaseArmor.Value > 0f)
 			{
-				return "Move faster and take less damage.";
+				return TextFragment("WHIP_PICKUP_SPEEDARMOR");
 			}
 			if (BaseMove.Value > 0f)
 			{
-				return "Move faster.";
+				return TextFragment("WHIP_PICKUP_SPEED");
 			}
 			if (BaseMove.Value > 0f && BaseArmor.Value > 0f)
 			{
-				return "Take less damage.";
+				return TextFragment("WHIP_PICKUP_ARMOR");
 			}
 
-			return "No effect.";
+			return TextFragment("PICKUP_NO_EFFECT");
 		}
 	}
 }

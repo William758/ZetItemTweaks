@@ -134,8 +134,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
+				RegisterFragment("SHINY_PICKUP", "Increases Stats.");
 				RegisterToken("ITEM_SHINYPEARL_DESC", DescriptionText());
-				RegisterToken("ITEM_SHINYPEARL_PICKUP", "Increases Stats.");
+				RegisterToken("ITEM_SHINYPEARL_PICKUP", TextFragment("SHINY_PICKUP"));
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SHINY_PICKUP", "Aumenta as suas estatísticas.");
+				RegisterToken("ITEM_SHINYPEARL_DESC", DescriptionText());
+				RegisterToken("ITEM_SHINYPEARL_PICKUP", TextFragment("SHINY_PICKUP"));
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

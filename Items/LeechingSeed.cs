@@ -106,10 +106,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("HEAL_ON_HIT", "\nDealing damage <style=cIsHealing>heals</style> you for {0} <style=cIsHealing>health</style>.");
 				RegisterFragment("HEAL_PERCENT_ON_HIT", "\n<style=cIsHealing>Heal</style> for {0} of the <style=cIsDamage>damage</style> you deal.");
 				RegisterFragment("LEECH_MODIFIER_FORMULA", "\n<style=cStack>Leech Modifier => {0}( [a]{1} , {2} ){3}</style>");
 				RegisterToken("ITEM_SEED_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("HEAL_ON_HIT", "\nCausar dano <style=cIsHealing>cura</style> você em {0} de <style=cIsHealing>saúde</style>.");
+				RegisterFragment("HEAL_PERCENT_ON_HIT", "\n<style=cIsHealing>Cura</style> em {0} do <style=cIsDamage>dano</style> causado.");
+				RegisterFragment("LEECH_MODIFIER_FORMULA", "\n<style=cStack>Modificador Sanguessuga => {0}( [a]{1} , {2} ){3}</style>");
+				RegisterToken("ITEM_SEED_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -151,7 +162,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}

@@ -140,10 +140,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("STORE_SOULENERGY", "Store {0} of healing as <style=cIsHealing>Soul Energy</style>.");
 				RegisterFragment("SOULENERGY_THRESHOLD", "\nAfter your <style=cIsHealing>Soul Energy</style> reaches {0} of your <style=cIsHealing>maximum health</style>,");
 				RegisterFragment("DEVILORB", " fire a <style=cIsDamage>skull</style> at an enemy within {0} that deals {1} of your <style=cIsHealing>Soul Energy</style> as damage.");
 				RegisterToken("ITEM_NOVAONHEAL_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("STORE_SOULENERGY", "Salve {0} de cura como <style=cIsHealing>Energia Espiritual</style>.");
+				RegisterFragment("SOULENERGY_THRESHOLD", "\nApós a <style=cIsHealing>Energia Espiritual</style> atingir {0} da <style=cIsHealing>saúde máxima</style>,");
+				RegisterFragment("DEVILORB", " Lance uma <style=cIsDamage>caveira</style> em um inimigo dentro de {0} que causa {1} da sua <style=cIsHealing>Energia Espiritual</style> como dano.");
+				RegisterToken("ITEM_NOVAONHEAL_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

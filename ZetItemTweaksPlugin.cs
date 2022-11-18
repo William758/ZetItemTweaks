@@ -23,12 +23,14 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.2.1";
+		public const string ModVer = "1.2.2";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
-		public static Dictionary<string, string> LangTokens = new Dictionary<string, string>();
-		public static Dictionary<string, string> Fragments = new Dictionary<string, string>();
+		public static string targetLanguage = "default";
+
+		public static Dictionary<string, Dictionary<string, string>> tokens = new Dictionary<string, Dictionary<string, string>>();
+		public static Dictionary<string, Dictionary<string, string>> fragments = new Dictionary<string, Dictionary<string, string>>();
 
 		public static List<string> ConfigKeys = new List<string>();
 		public static List<string> TweakedItems = new List<string>();
@@ -38,6 +40,7 @@ namespace TPDespair.ZetItemTweaks
 
 		public static ConfigEntry<bool> EnableAutoCompat { get; set; }
 		public static ConfigEntry<bool> ExplicitEnable { get; set; }
+		public static ConfigEntry<bool> LogExplicitDisabled { get; set; }
 		public static ConfigEntry<bool> LogMissingPlugins { get; set; }
 		public static ConfigEntry<bool> GenerateOverrideText { get; set; }
 
@@ -251,6 +254,10 @@ namespace TPDespair.ZetItemTweaks
 				section, "ExplicitEnable", false,
 				"Only enable item changes for sections that are set to force enabled. EnableAutoCompat setting will be ignored."
 			);
+			LogExplicitDisabled = ConfigEntry(
+				section, "LogExplicitDisabled", true,
+				"Log item change disabled if it is not explicitly enabled."
+			);
 			LogMissingPlugins = ConfigEntry(
 				section, "LogMissingPlugins", true,
 				"Log missing plugin if modded item change enabled but plugin not loaded."
@@ -353,6 +360,8 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void SetupFragments()
 		{
+			targetLanguage = "default";
+
 			RegisterFragment("BASE_STACK_FORMAT", "{0} {1}");
 
 			RegisterFragment("FLAT_VALUE", "{0}");
@@ -400,6 +409,64 @@ namespace TPDespair.ZetItemTweaks
 			RegisterFragment("STAT_COOLDOWN", "\nReduces <style=cIsUtility>skill cooldowns</style> by {0}.");
 			RegisterFragment("STAT_CRIT", "\nIncreases <style=cIsDamage>critical strike chance</style> by {0}.");
 			RegisterFragment("STAT_CRITMULT", "\nIncreases <style=cIsDamage>critical strike multiplier</style> by {0}.");
+
+			RegisterFragment("CFG_NO_EFFECT", "<style=cStack>(current configuration :: item with no effect)</style>");
+			RegisterFragment("PICKUP_NO_EFFECT", "No effect.");
+
+			targetLanguage = "pt-BR";
+
+			RegisterFragment("BASE_STACK_FORMAT", "{0} {1}");
+
+			RegisterFragment("FLAT_VALUE", "{0}");
+			RegisterFragment("PERCENT_VALUE", "{0}%");
+			RegisterFragment("FLATREGEN_VALUE", "{0} PV/s");
+			RegisterFragment("PERCENTREGEN_VALUE", "{0}% PV/s");
+			RegisterFragment("DURATION_VALUE", "{0} s");
+			RegisterFragment("METER_VALUE", "{0} m");
+
+			RegisterFragment("FLAT_STACK_INC", "<style=cStack>(+{0} por acúmulo)</style>");
+			RegisterFragment("PERCENT_STACK_INC", "<style=cStack>(+{0}% por acúmulo)</style>");
+			RegisterFragment("FLATREGEN_STACK_INC", "<style=cStack>(+{0} PV/s por acúmulo)</style>");
+			RegisterFragment("PERCENTREGEN_STACK_INC", "<style=cStack>(+{0}% PV/s por acúmulo)</style>");
+			RegisterFragment("DURATION_STACK_INC", "<style=cStack>(+{0} s por acúmulo)</style>");
+			RegisterFragment("METER_STACK_INC", "<style=cStack>(+{0} m por acúmulo)</style>");
+			RegisterFragment("FLAT_STACK_DEC", "<style=cStack>(-{0} por acúmulo)</style>");
+			RegisterFragment("PERCENT_STACK_DEC", "<style=cStack>(-{0}% por acúmulo)</style>");
+			RegisterFragment("FLATREGEN_STACK_DEC", "<style=cStack>(-{0} PV/s por acúmulo)</style>");
+			RegisterFragment("PERCENTREGEN_STACK_DEC", "<style=cStack>(-{0}% PV/s por acúmulo)</style>");
+			RegisterFragment("DURATION_STACK_DEC", "<style=cStack>(-{0} s por acúmulo)</style>");
+			RegisterFragment("METER_STACK_DEC", "<style=cStack>(-{0} m por acúmulo)</style>");
+
+			RegisterFragment("BASE_DAMAGE", "base");
+			RegisterFragment("TOTAL_DAMAGE", "TOTAL");
+
+			RegisterFragment("FOR_SECOND", "por {0} segundo");
+			RegisterFragment("FOR_SECONDS", "por {0} segundos");
+			RegisterFragment("OVER_SECOND", "ao longo de {0} segundo");
+			RegisterFragment("OVER_SECONDS", "ao longo de {0} segundos");
+			RegisterFragment("AFTER_SECOND", "após {0} segundo");
+			RegisterFragment("AFTER_SECONDS", "após {0} segundos");
+			RegisterFragment("EVERY_SECOND", "a cada segundo");
+			RegisterFragment("EVERY_SECONDS", "a cada {0} segundos");
+			RegisterFragment("SECOND", "{0} segundo");
+			RegisterFragment("SECONDS", "{0} segundos");
+
+			RegisterFragment("STAT_HEALTH_EXTRA_SHIELD", "\nGanhe {0} de saúde como <style=cIsHealing>escudo</style> extra.");
+			RegisterFragment("STAT_EXTRA_JUMP", "\nGanhe <style=cIsUtility>+1</style> de <style=cIsUtility>quantidade de saltos</style> máximos.");
+			RegisterFragment("STAT_MOVESPEED", "\nAumenta a <style=cIsUtility>velocidade de movimento</style> em {0}.");
+			RegisterFragment("STAT_ATKSPEED", "\nAumenta a <style=cIsDamage>velocidade de ataque</style> em {0}.");
+			RegisterFragment("STAT_ARMOR", "\nAumenta a <style=cIsHealing>armadura</style> em {0}.");
+			RegisterFragment("STAT_HEALTH", "\nAumenta a <style=cIsHealing>saúde máxima</style> em {0}.");
+			RegisterFragment("STAT_REGENERATION", "\nAumenta a <style=cIsHealing>regeneração de saúde</style> em {0}.");
+			RegisterFragment("STAT_DAMAGE", "\nAumenta o <style=cIsDamage>dano</style> em {0}.");
+			RegisterFragment("STAT_COOLDOWN", "\nReduz os <style=cIsUtility>tempos de recarga das habilidades</style> em {0}.");
+			RegisterFragment("STAT_CRIT", "\nAumenta a <style=cIsDamage>chance de acerto crítico</style> em {0}.");
+			RegisterFragment("STAT_CRITMULT", "\nAumenta o <style=cIsDamage>multiplicador de acerto crítico</style> em {0}.");
+
+			RegisterFragment("CFG_NO_EFFECT", "<style=cStack>(Configuração atual :: item sem efeito)</style>");
+			RegisterFragment("PICKUP_NO_EFFECT", "Sem efeito.");
+
+			targetLanguage = "";
 		}
 
 
@@ -456,7 +523,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (ExplicitEnable.Value)
 				{
-					if (logInfo) LogInfo(identifier + " :: Disabled because it was not explicitly enabled!");
+					if (logInfo && LogExplicitDisabled.Value) LogInfo(identifier + " :: Disabled because it was not explicitly enabled!");
 
 					return false;
 				}
@@ -584,54 +651,115 @@ namespace TPDespair.ZetItemTweaks
 		{
 			On.RoR2.Language.TokenIsRegistered += (orig, self, token) =>
 			{
+				string language = self.name;
+
 				if (token != null)
 				{
-					if (LangTokens.ContainsKey(token)) return true;
+					if (tokens.ContainsKey(language))
+					{
+						if (tokens[language].ContainsKey(token)) return true;
+					}
+					if (tokens.ContainsKey("default"))
+					{
+						if (tokens["default"].ContainsKey(token)) return true;
+					}
 				}
 
 				return orig(self, token);
 			};
 
-			On.RoR2.Language.GetString_string += (orig, token) =>
+			On.RoR2.Language.GetLocalizedStringByToken += (orig, self, token) =>
 			{
+				string language = self.name;
+
 				if (token != null)
 				{
-					if (LangTokens.ContainsKey(token)) return LangTokens[token];
+					if (tokens.ContainsKey(language))
+					{
+						if (tokens[language].ContainsKey(token)) return tokens[language][token];
+					}
+					if (tokens.ContainsKey("default"))
+					{
+						if (tokens["default"].ContainsKey(token)) return tokens["default"][token];
+					}
 				}
 
-				return orig(token);
+				return orig(self, token);
 			};
 		}
 
-		public static void RegisterToken(string token, string text)
+		public static void RegisterToken(string token, string text, string language = "default")
 		{
-			if (!LangTokens.ContainsKey(token)) LangTokens.Add(token, text);
-			else LangTokens[token] = text;
-		}
+			if (targetLanguage != "" || targetLanguage != "default") language = targetLanguage;
 
-		public static void RegisterFragment(string token, string text)
-		{
-			if (!Fragments.ContainsKey(token)) Fragments.Add(token, text);
+			if (!tokens.ContainsKey(language)) tokens.Add(language, new Dictionary<string, string>());
+
+			var langDict = tokens[language];
+
+			if (!langDict.ContainsKey(token))
+			{
+				langDict.Add(token, text);
+			}
 			else
 			{
-				if (Fragments[token] != text)
+				if (langDict[token] != text)
 				{
-					LogInfo("Replacing fragment (" + token + ")");
-					Fragments[token] = text;
+					LogInfo("Replacing token (" + token + ") in (" + language + ") token language.");
+					langDict[token] = text;
+				}
+			}
+		}
+
+		public static void RegisterFragment(string token, string text, string language = "default")
+		{
+			if (targetLanguage != "" || targetLanguage != "default") language = targetLanguage;
+
+			if (!fragments.ContainsKey(language)) fragments.Add(language, new Dictionary<string, string>());
+
+			var langDict = fragments[language];
+
+			if (!langDict.ContainsKey(token))
+			{
+				langDict.Add(token, text);
+			}
+			else
+			{
+				if (langDict[token] != text)
+				{
+					LogInfo("Replacing fragment (" + token + ") in (" + language + ") fragment language.");
+					langDict[token] = text;
 				}
 			}
 		}
 
 		public static string TextFragment(string key, bool trim = false)
 		{
-			if (Fragments.ContainsKey(key))
+			if (targetLanguage != "" || targetLanguage != "default")
 			{
-				string output = Fragments[key];
-				if (trim) output = output.Trim('\n');
-				return output;
+				if (fragments.ContainsKey(targetLanguage))
+				{
+					if (fragments[targetLanguage].ContainsKey(key))
+					{
+						string output = fragments[targetLanguage][key];
+						if (trim) output = output.Trim('\n');
+
+						return output;
+					}
+				}
 			}
 
-			LogInfo("Failed to find fragment (" + key + ")");
+			if (fragments.ContainsKey("default"))
+			{
+				if (fragments["default"].ContainsKey(key))
+				{
+					string output = fragments["default"][key];
+					if (trim) output = output.Trim('\n');
+
+					return output;
+				}
+			}
+
+			LogInfo("Failed to find fragment (" + key + ") in any fragment language.");
 			return "[" + key + "]";
 		}
 

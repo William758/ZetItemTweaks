@@ -77,9 +77,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("FIRE_TORNADO_TRIGGER", "Hits that deal <style=cIsDamage>more than 400% damage</style> also blasts enemies with a <style=cIsDamage>runic flame tornado</style>,");
 				RegisterFragment("FIRE_TORNADO_DAMAGE", " dealing {0} TOTAL damage over time. Recharges every <style=cIsUtility>10</style> seconds.");
 				RegisterToken("ITEM_FIRERING_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("FIRE_TORNADO_TRIGGER", "Golpes que causam <style=cIsDamage>mais que 400% de dano</style> também atingem inimigos com um <style=cIsDamage>tornado flamejante rúnico</style>,");
+				RegisterFragment("FIRE_TORNADO_DAMAGE", " causa {0} de dano TOTAL ao longo do tempo. Recarrega a cada <style=cIsUtility>10</style> segundos.");
+				RegisterToken("ITEM_FIRERING_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

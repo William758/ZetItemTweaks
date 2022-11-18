@@ -91,6 +91,8 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("SHURIKEN_DAMAGE", "Activating your <style=cIsUtility>Primary Skill</style> also throws a <style=cIsDamage>shuriken</style> that deals {0} base damage.");
 				RegisterFragment("SHURIKEN_COUNT", "\nYou can hold up to {0} <style=cIsDamage>shurikens</style>.");
 				RegisterFragment("SHURIKEN_RECHARGE", "\nGain a <style=cIsDamage>shuriken</style> {0}.");
@@ -98,6 +100,18 @@ namespace TPDespair.ZetItemTweaks
 				RegisterFragment("SHURIKEN_RECHARGE_ALL", "\nReload all <style=cIsDamage>shuriken</style> {0}.");
 				RegisterFragment("SHURIKEN_RECHARGE_REDUCE_ALL", "\nReload all <style=cIsDamage>shuriken</style> {0} <style=cStack>(-{1} per stack)</style>.");
 				RegisterToken("ITEM_PRIMARYSKILLSHURIKEN_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SHURIKEN_DAMAGE", "Ativar sua <style=cIsUtility>Habilidade Primária</style> também lança uma <style=cIsDamage>shuriken</style> que causa {0} de dano base.");
+				RegisterFragment("SHURIKEN_COUNT", "\nÉ possível ter até {0} <style=cIsDamage>shurikens</style>.");
+				RegisterFragment("SHURIKEN_RECHARGE", "\nGanhe uma <style=cIsDamage>shuriken</style> {0}.");
+				RegisterFragment("SHURIKEN_RECHARGE_REDUCE", "\nGanhe uma <style=cIsDamage>shuriken</style> {0} <style=cStack>(-{1} por acúmulo)</style>.");
+				RegisterFragment("SHURIKEN_RECHARGE_ALL", "\nRecarregue todas as <style=cIsDamage>shuriken</style> {0}.");
+				RegisterFragment("SHURIKEN_RECHARGE_REDUCE_ALL", "\nRecarregue todas as <style=cIsDamage>shuriken</style> {0} <style=cStack>(-{1} por acúmulo)</style>.");
+				RegisterToken("ITEM_PRIMARYSKILLSHURIKEN_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

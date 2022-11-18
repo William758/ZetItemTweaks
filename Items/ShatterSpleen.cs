@@ -108,11 +108,25 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("BLEED_ON_CRIT", "\nAttacks <style=cIsDamage>bleed</style> on <style=cIsDamage>critical strike</style> for {0} base damage.");
 				RegisterFragment("BLEED_EXPLODE_BASE", "\n<style=cIsDamage>Bleeding</style> enemies <style=cIsDamage>explode</style> on death for {0} base damage.");
 				RegisterFragment("BLEED_EXPLODE_HEALTH", "\n<style=cIsDamage>Bleeding</style> enemies <style=cIsDamage>explode</style> on death {0} of their maximum health.");
 				RegisterFragment("BLEED_EXPLODE_BOTH", "\n<style=cIsDamage>Bleeding</style> enemies <style=cIsDamage>explode</style> on death for {0} base damage, plus an additional {1} of their maximum health.");
+				RegisterFragment("CFG_NO_EXPLODE_EFFECT", "\n<style=cStack>(current configuration :: no explosion damage)</style>");
 				RegisterToken("ITEM_BLEEDONHITANDEXPLODE_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("BLEED_ON_CRIT", "\nAtaques <style=cIsDamage>sangram</style> nos <style=cIsDamage>acertos críticos</style> em {0} de dano base.");
+				RegisterFragment("BLEED_EXPLODE_BASE", "\nInimigos <style=cIsDamage>sangrando</style> <style=cIsDamage>explodem</style> ao abater em {0} de dano base.");
+				RegisterFragment("BLEED_EXPLODE_HEALTH", "\nInimigos <style=cIsDamage>sangrando</style> <style=cIsDamage>explodem</style> ao abater {0} de sua saúde máxima.");
+				RegisterFragment("BLEED_EXPLODE_BOTH", "\nInimigos <style=cIsDamage>sangrando</style> <style=cIsDamage>explodem</style> ao abater em {0} de dano base, mais um adicional de {1} de sua saúde máxima.");
+				RegisterFragment("CFG_NO_EXPLODE_EFFECT", "\n<style=cStack>(configuração atual :: sem dano de explosão)</style>");
+				RegisterToken("ITEM_BLEEDONHITANDEXPLODE_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -176,7 +190,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 				else
 				{
-					output += "\n<style=cStack>(current configuration :: no explosion damage)</style>";
+					output += TextFragment("CFG_NO_EXPLODE_EFFECT");
 				}
 			}
 

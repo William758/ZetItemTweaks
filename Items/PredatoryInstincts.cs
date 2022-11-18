@@ -78,10 +78,23 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("ATKSPD_ON_CRIT", "\n<style=cIsDamage>Critical strikes</style> increase <style=cIsDamage>attack speed</style> by {0}.");
 				RegisterFragment("PREDATOR_CAP", "\nMaximum cap of {0} <style=cIsDamage>attack speed</style>.");
+				RegisterFragment("PREDATOR_PICKUP", "Critical strikes increase attack speed.");
 				RegisterToken("ITEM_ATTACKSPEEDONCRIT_DESC", DescriptionText());
-				RegisterToken("ITEM_ATTACKSPEEDONCRIT_PICKUP", "Critical strikes increase attack speed.");
+				RegisterToken("ITEM_ATTACKSPEEDONCRIT_PICKUP", TextFragment("PREDATOR_PICKUP"));
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("ATKSPD_ON_CRIT", "\n<style=cIsDamage>Acertos Críticos</style> aumentam a <style=cIsDamage>velocidade de ataque</style> em {0}.");
+				RegisterFragment("PREDATOR_CAP", "\nLimite máximo de {0} de <style=cIsDamage>velocidade de ataque</style>.");
+				RegisterFragment("PREDATOR_PICKUP", "Acertos Críticos aumentam velocidade de ataque.");
+				RegisterToken("ITEM_ATTACKSPEEDONCRIT_DESC", DescriptionText());
+				RegisterToken("ITEM_ATTACKSPEEDONCRIT_PICKUP", TextFragment("PREDATOR_PICKUP"));
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

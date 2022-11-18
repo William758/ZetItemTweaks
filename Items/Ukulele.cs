@@ -106,9 +106,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("UKULELE_DAMAGE", "{0} chance to fire <style=cIsDamage>chain lightning</style> that deals {1} TOTAL damage.");
 				RegisterFragment("UKULELE_TARGETING", "\nHits up to {0} targets within {1}.");
 				RegisterToken("ITEM_CHAINLIGHTNING_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("UKULELE_DAMAGE", "{0} de chance de disparar <style=cIsDamage>raios em cadeia</style> e causar {1} de dano TOTAL.");
+				RegisterFragment("UKULELE_TARGETING", "\nAtinge até {0} alvos, ao alcance de {1}.");
+				RegisterToken("ITEM_CHAINLIGHTNING_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

@@ -83,8 +83,17 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("ATG_MISSILE", "{0} chance to fire a <style=cIsDamage>missile</style> that deals {1} TOTAL damage.");
 				RegisterToken("ITEM_MISSILE_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("ATG_MISSILE", "{0} de chance de disparar um <style=cIsDamage>míssil</style> que causa {1} de dano TOTAL.");
+				RegisterToken("ITEM_MISSILE_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

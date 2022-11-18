@@ -84,11 +84,29 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("ENERGIZE_MOVE", "Activating your Equipment gives you {0} <style=cIsDamage>attack speed</style> for {1}.");
 				RegisterFragment("ENERGIZE_ATKSPD", "Activating your Equipment gives you {0} <style=cIsUtility>movement speed</style> for {1}.");
 				RegisterFragment("ENERGIZE_BOTH", "Activating your Equipment gives you {0} <style=cIsUtility>movement speed</style> and {1} <style=cIsDamage>attack speed</style> for {2}.");
+				RegisterFragment("WARHORN_PICKUP_BOTH", "Activating your Equipment gives you a burst of movement speed and attack speed.");
+				RegisterFragment("WARHORN_PICKUP_MOVESPD", "Activating your Equipment gives you a burst of movement speed.");
+				RegisterFragment("WARHORN_PICKUP_ATKSPD", "Activating your Equipment gives you a burst of attack speed.");
 				RegisterToken("ITEM_ENERGIZEDONEQUIPMENTUSE_DESC", DescriptionText());
 				RegisterToken("ITEM_ENERGIZEDONEQUIPMENTUSE_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("ENERGIZE_MOVE", "Ativar seu Equipamento concede {0} de <style=cIsDamage>velocidade de ataque</style> for {1}.");
+				RegisterFragment("ENERGIZE_ATKSPD", "Ativar seu Equipamento concede {0} de <style=cIsUtility>velocidade de movimento</style> for {1}.");
+				RegisterFragment("ENERGIZE_BOTH", "Ativar seu Equipamento concede {0} de <style=cIsUtility>velocidade de movimento</style> e {1} de <style=cIsDamage>velocidade de ataque</style> por {2}.");
+				RegisterFragment("WARHORN_PICKUP_BOTH", "Ativar seu Equipamento concede uma alta velocidade de movimento e de velocidade de ataque.");
+				RegisterFragment("WARHORN_PICKUP_MOVESPD", "Ativar seu Equipamento concede uma alta velocidade de movimento.");
+				RegisterFragment("WARHORN_PICKUP_ATKSPD", "Ativar seu Equipamento concede uma alta velocidade de ataque.");
+				RegisterToken("ITEM_ENERGIZEDONEQUIPMENTUSE_DESC", DescriptionText());
+				RegisterToken("ITEM_ENERGIZEDONEQUIPMENTUSE_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -131,15 +149,15 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (BaseBuffMove.Value > 0f && BaseBuffAtkSpd.Value > 0f)
 			{
-				return "Activating your Equipment gives you a burst of movement speed and attack speed.";
+				return TextFragment("WARHORN_PICKUP_BOTH");
 			}
 			else if (BaseBuffMove.Value > 0f)
 			{
-				return "Activating your Equipment gives you a burst of movement speed.";
+				return TextFragment("WARHORN_PICKUP_MOVESPD");
 			}
 			else if (BaseBuffAtkSpd.Value > 0f)
 			{
-				return "Activating your Equipment gives you a burst of attack speed.";
+				return TextFragment("WARHORN_PICKUP_ATKSPD");
 			}
 			return "wat";
 		}

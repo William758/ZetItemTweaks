@@ -89,10 +89,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("ICE_BLAST_TRIGGER", "Hits that deal <style=cIsDamage>more than 400% damage</style> also blasts enemies with a <style=cIsDamage>runic ice blast</style>,");
 				RegisterFragment("ICE_BLAST_SLOW", " <style=cIsUtility>slowing</style> them by <style=cIsUtility>80%</style> for {0}");
 				RegisterFragment("ICE_BLAST_DAMAGE", " and dealing {0} TOTAL damage. Recharges every <style=cIsUtility>10</style> seconds.");
 				RegisterToken("ITEM_ICERING_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("ICE_BLAST_TRIGGER", "Golpes que causam <style=cIsDamage>mais do que 400% de dano</style> também atingem inimigos com uma <style=cIsDamage>explosão de gelo rúnico</style>,");
+				RegisterFragment("ICE_BLAST_SLOW", " <style=cIsUtility>desacelerando-os</style> em <style=cIsUtility>80%</style> por {0}");
+				RegisterFragment("ICE_BLAST_DAMAGE", " e causando {0} de dano TOTAL. Recarrega a cada <style=cIsUtility>10</style> segundos.");
+				RegisterToken("ITEM_ICERING_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

@@ -101,8 +101,17 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("COOLDOWN_DEDUCT", "\nReduces <style=cIsUtility>skill cooldowns</style> by {0} seconds.");
 				RegisterToken("ITEM_ALIENHEAD_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("COOLDOWN_DEDUCT", "\nReduz as <style=cIsUtility>recargas de habilidades</style> em {0} segundos.");
+				RegisterToken("ITEM_ALIENHEAD_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

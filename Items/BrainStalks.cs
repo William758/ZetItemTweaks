@@ -99,9 +99,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default"; 
+				
 				RegisterFragment("BRAINSTALK_DURATION", "Upon killing an elite monster, <style=cIsDamage>enter a frenzy</style> for {0}");
 				RegisterFragment("BRAINSTALK_EFFECT", " where <style=cIsUtility>skills have no cooldowns</style>.");
 				RegisterToken("ITEM_KILLELITEFRENZY_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("BRAINSTALK_DURATION", "Ao abater um monstro de elite, <style=cIsDamage>entre em frenesi</style> por {0}");
+				RegisterFragment("BRAINSTALK_EFFECT", " em que <style=cIsUtility>as habilidades não têm tempo de recarga</style>.");
+				RegisterToken("ITEM_KILLELITEFRENZY_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

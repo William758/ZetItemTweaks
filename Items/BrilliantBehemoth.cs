@@ -82,8 +82,17 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default"; 
+				
 				RegisterFragment("EXPLODE_ON_HIT", "Attacks <style=cIsDamage>explode</style> on hit in a {0} radius for {1} TOTAL damage.");
 				RegisterToken("ITEM_BEHEMOTH_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("EXPLODE_ON_HIT", "Ataques <style=cIsDamage>explodem</style> ao golpear em uma area de {0} que causa {1} de dano TOTAL.");
+				RegisterToken("ITEM_BEHEMOTH_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

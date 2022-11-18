@@ -86,8 +86,17 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("NEARBY_DAMAGE", "\nIncrease damage to enemies within {0} by {1}.");
 				RegisterToken("ITEM_NEARBYDAMAGEBONUS_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("NEARBY_DAMAGE", "\nAumenta o dano aos inimigos dentro de {0} em {1}.");
+				RegisterToken("ITEM_NEARBYDAMAGEBONUS_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

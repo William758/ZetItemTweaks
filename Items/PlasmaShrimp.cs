@@ -87,9 +87,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("PLASMA_MISSILE", "\nWhile you have <style=cIsHealing>shield</style>, hitting an enemy fires a <style=cIsDamage>missile</style> that deals {0} TOTAL damage.");
 				RegisterFragment("PLASMASHRIMP_CORRUPTION", "\n<style=cIsVoid>Corrupts all AtG Missile Mk. 1s</style>.");
 				RegisterToken("ITEM_MISSILEVOID_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("PLASMA_MISSILE", "\nEnquanto possuir um <style=cIsHealing>escudo</style>, golpear um inimigo dispara um <style=cIsDamage>míssil</style> que causa {0} de dano TOTAL.");
+				RegisterFragment("PLASMASHRIMP_CORRUPTION", "\n<style=cIsVoid>Corrompe todos os Mísseis ASM Mk. 1s</style>.");
+				RegisterToken("ITEM_MISSILEVOID_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

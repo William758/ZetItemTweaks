@@ -69,8 +69,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
+				RegisterFragment("SCOPE_PICKUP", "Critical strikes deal additional damage.");
 				RegisterToken("ITEM_CRITDAMAGE_DESC", DescriptionText());
-				RegisterToken("ITEM_CRITDAMAGE_PICKUP", "Critical strikes deal additional damage.");
+				RegisterToken("ITEM_CRITDAMAGE_PICKUP", TextFragment("SCOPE_PICKUP"));
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SCOPE_PICKUP", "Acertos críticos causam dano adicional.");
+				RegisterToken("ITEM_CRITDAMAGE_DESC", DescriptionText());
+				RegisterToken("ITEM_CRITDAMAGE_PICKUP", TextFragment("SCOPE_PICKUP"));
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

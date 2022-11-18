@@ -75,10 +75,27 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("GOLD_FROM_KILL", "Kills grant {0} more gold.");
 				RegisterFragment("TREASURE", "Kills have a {0} chance to drop a treasure worth <style=cIsUtility>$25</style> that <style=cIsUtility>scales over time</style>.");
+				RegisterFragment("TOME_PICKUP_GOLDTREASURE", "Kills grant more gold and have a chance to drop treasure.");
+				RegisterFragment("TOME_PICKUP_TREASURE", "Kills have a chance to drop treasure.");
+				RegisterFragment("TOME_PICKUP_GOLD", "Kills grant more gold.");
 				RegisterToken("ITEM_BONUSGOLDPACKONKILL_DESC", DescriptionText());
 				RegisterToken("ITEM_BONUSGOLDPACKONKILL_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("GOLD_FROM_KILL", "Os abates concedem {0} mais ouro.");
+				RegisterFragment("TREASURE", "Os abates tem uma chance de {0} de soltar um tesouro no valor de <style=cIsUtility>$25</style> que <style=cIsUtility>escala ao longo do tempo</style>.");
+				RegisterFragment("TOME_PICKUP_GOLDTREASURE", "Os abates concedem mais ouro e têm a chance de soltar um tesouro.");
+				RegisterFragment("TOME_PICKUP_TREASURE", "Os abates tem uma chance de soltar um tesouro.");
+				RegisterFragment("TOME_PICKUP_GOLD", "Os abates condecem mais ouro.");
+				RegisterToken("ITEM_BONUSGOLDPACKONKILL_DESC", DescriptionText());
+				RegisterToken("ITEM_BONUSGOLDPACKONKILL_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -104,7 +121,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}
@@ -113,18 +130,18 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (BaseChance.Value > 0f && BaseMult.Value > 0f)
 			{
-				return "Kills grant more gold and have a chance to drop treasure.";
+				return TextFragment("TOME_PICKUP_GOLDTREASURE");
 			}
 			if (BaseChance.Value > 0f)
 			{
-				return "Kills have a chance to drop treasure.";
+				return TextFragment("TOME_PICKUP_TREASURE");
 			}
 			if (BaseMult.Value > 0f)
 			{
-				return "Kills grant more gold.";
+				return TextFragment("TOME_PICKUP_GOLD");
 			}
 
-			return "No effect.";
+			return TextFragment("PICKUP_NO_EFFECT");
 		}
 
 

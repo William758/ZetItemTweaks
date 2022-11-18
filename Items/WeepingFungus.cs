@@ -105,10 +105,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("SPRINTHEAL_ANY", "<style=cIsHealing>Heals</style> for {0} health every second while sprinting.");
 				RegisterFragment("SPRINTHEAL_BOTH", "<style=cIsHealing>Heals</style> for {0} plus an additional {1} health every second while sprinting.");
 				RegisterFragment("SPRINTHEAL_CORRUPTION", "\n<style=cIsVoid>Corrupts all Bustling Fungi</style>.");
 				RegisterToken("ITEM_MUSHROOMVOID_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SPRINTHEAL_ANY", "<style=cIsHealing>Cura</style> em {0} da saúde por segundo ao correr.");
+				RegisterFragment("SPRINTHEAL_BOTH", "<style=cIsHealing>Cura</style> em {0} mais um adicional de {1} da saúde por segundo ao correr.");
+				RegisterFragment("SPRINTHEAL_CORRUPTION", "\n<style=cIsVoid>Corrompe todos os Fungos Vibrantes</style>.");
+				RegisterToken("ITEM_MUSHROOMVOID_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -141,7 +152,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			output += TextFragment("SPRINTHEAL_CORRUPTION");
 

@@ -110,11 +110,23 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("RAZOR_BURST", "Getting hit causes you to explode in a burst of razors ");
 				RegisterFragment("RAZOR_DAMAGE_BASIC", "that deal {0} <style=cIsDamage>damage</style>.");
 				RegisterFragment("RAZOR_DAMAGE_COMPLEX", "that deal between {0} and {1} <style=cIsDamage>damage</style>.");
 				RegisterFragment("RAZOR_TARGETING", "\nHits up to {0} targets within {1}.");
 				RegisterToken("ITEM_THORNS_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("RAZOR_BURST", "Ser atingido faz você explodir em lâminas ");
+				RegisterFragment("RAZOR_DAMAGE_BASIC", "causando {0} de <style=cIsDamage>dano</style>.");
+				RegisterFragment("RAZOR_DAMAGE_COMPLEX", "causando entre {0} e {1} ded <style=cIsDamage>dano</style>.");
+				RegisterFragment("RAZOR_TARGETING", "\nAtinge até {0} alvos em um raio de {1}.");
+				RegisterToken("ITEM_THORNS_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

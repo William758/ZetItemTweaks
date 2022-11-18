@@ -121,10 +121,21 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("TESLA_DAMAGE", "Fire out <style=cIsDamage>lightning</style> that repeatedly deals {0} base damage.");
 				RegisterFragment("TESLA_TARGETING", "\nHits up to {0} targets within {1}.");
 				RegisterFragment("TESLA_ALTERNATE", "\nThe Tesla Coil cycles activity {0}.");
 				RegisterToken("ITEM_SHOCKNEARBY_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("TESLA_DAMAGE", "Lance um <style=cIsDamage>relâmpago</style> que repetidamente causa {0} de dano base.");
+				RegisterFragment("TESLA_TARGETING", "\nAtinge até {0} alvos, ao alcance de {1}.");
+				RegisterFragment("TESLA_ALTERNATE", "\nA Bobina de Tesla se desativa a cada {0}.");
+				RegisterToken("ITEM_SHOCKNEARBY_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

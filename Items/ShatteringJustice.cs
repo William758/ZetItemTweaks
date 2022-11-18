@@ -86,9 +86,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("PULVERIZE_ON_HIT", "Attacks <style=cIsDamage>pulverize</style> on hit {0}, reducing <style=cIsDamage>armor</style> by {1}.");
 				RegisterFragment("PULVERIZE_DAMAGE", "\nDeal up to an additional {0} <style=cIsDamage>damage</style> against pulverized enemies, with maximum effect when target has <style=cIsHealth>{1} health</style> remaining.");
 				RegisterToken("ITEM_ARMORREDUCTIONONHIT_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("PULVERIZE_ON_HIT", "Ataques <style=cIsDamage>pulverizam</style> ao golpear {0}, reduzindo a <style=cIsDamage>armadura</style> em {1}.");
+				RegisterFragment("PULVERIZE_DAMAGE", "\nCausa até um adicional de {0} de <style=cIsDamage>dano</style> contra inimigos pulverizados, com efeito máximo quando o alvo tem <style=cIsHealth>{1} de saúde</style> restante.");
+				RegisterToken("ITEM_ARMORREDUCTIONONHIT_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

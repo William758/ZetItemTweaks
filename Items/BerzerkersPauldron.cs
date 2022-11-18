@@ -93,16 +93,35 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("MULTIKILL_ATKSPD", "Killing an enemy increase <style=cIsDamage>attack speed</style> by {0} for {1}.");
 				RegisterFragment("MULTIKILL_MOVE", "Killing an enemy increase <style=cIsUtility>movement speed</style> by {0} for {1}.");
 				RegisterFragment("MULTIKILL_BOTH", "Killing an enemy increase <style=cIsUtility>movement speed</style> by {0} and <style=cIsDamage>attack speed</style> by {1} for {2}.");
-
 				RegisterFragment("MULTIKILL_ATKSPD_CAP", "\nMaximum cap of {0} <style=cIsDamage>attack speed</style>.");
 				RegisterFragment("MULTIKILL_MOVE_CAP", "\nMaximum cap of {0} <style=cIsUtility>movement speed</style>.");
 				RegisterFragment("MULTIKILL_BOTH_CAP", "\nMaximum cap of {0} <style=cIsUtility>movement speed</style> and {1} <style=cIsDamage>attack speed</style>.");
-
+				RegisterFragment("BERZERK_PICKUP_BOTH", "Killing enemies grants movement speed and attack speed.");
+				RegisterFragment("BERZERK_PICKUP_MOVESPD", "Killing enemies grants movement speed.");
+				RegisterFragment("BERZERK_PICKUP_ATKSPD", "Killing enemies grants attack speed.");
 				RegisterToken("ITEM_WARCRYONMULTIKILL_DESC", DescriptionText());
 				RegisterToken("ITEM_WARCRYONMULTIKILL_PICKUP", PickupText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("MULTIKILL_ATKSPD", "Abater um inimigo aumenta a <style=cIsDamage>velocidade de ataque</style> em {0} por {1}.");
+				RegisterFragment("MULTIKILL_MOVE", "Abater um inimigo aumenta a <style=cIsUtility>velocidade de movimento</style> em {0} por {1}.");
+				RegisterFragment("MULTIKILL_BOTH", "Abater um inimigo aumenta a <style=cIsUtility>velocidade de movimento</style> em {0} e a <style=cIsDamage>velocidade de ataque</style> em {1} por {2}.");
+				RegisterFragment("MULTIKILL_ATKSPD_CAP", "\nLimite máximo de {0} de <style=cIsDamage>velocidade de ataque</style>.");
+				RegisterFragment("MULTIKILL_MOVE_CAP", "\nLimite máximo de {0} de <style=cIsUtility>velocidade de movimento</style>.");
+				RegisterFragment("MULTIKILL_BOTH_CAP", "\nLimite máximo de {0} de <style=cIsUtility>velocidade de movimento</style> e {1} de <style=cIsDamage>velocidade de ataque</style>.");
+				RegisterFragment("BERZERK_PICKUP_BOTH", "Abater um inimigos concede velocidade de movimento e velocidade de ataque.");
+				RegisterFragment("BERZERK_PICKUP_MOVESPD", "Abater um inimigos concede velocidade de movimento.");
+				RegisterFragment("BERZERK_PICKUP_ATKSPD", "Abater um inimigos concede velocidade de ataque.");
+				RegisterToken("ITEM_WARCRYONMULTIKILL_DESC", DescriptionText());
+				RegisterToken("ITEM_WARCRYONMULTIKILL_PICKUP", PickupText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -161,15 +180,15 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (BuffMove.Value > 0f && BuffAtkSpd.Value > 0f)
 			{
-				return "Killing enemies grants movement speed and attack speed.";
+				return TextFragment("BERZERK_PICKUP_BOTH");
 			}
 			else if (BuffMove.Value > 0f)
 			{
-				return "Killing enemies grants movement speed.";
+				return TextFragment("BERZERK_PICKUP_MOVESPD");
 			}
 			else if (BuffAtkSpd.Value > 0f)
 			{
-				return "Killing enemies grants attack speed.";
+				return TextFragment("BERZERK_PICKUP_ATKSPD");
 			}
 			return "wat";
 		}

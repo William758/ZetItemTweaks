@@ -70,9 +70,19 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default"; 
+				
 				RegisterFragment("SLOW_MOVE", "Attacks <style=cIsUtility>slow</style> enemies for <style=cIsUtility>-60% movement speed</style> for {0}.");
 				RegisterFragment("SLOW_BOTH", "Attacks <style=cIsUtility>slow</style> enemies for <style=cIsUtility>-60% movement speed</style> and <style=cIsUtility>-{0} attack speed</style> for {1}.");
 				RegisterToken("ITEM_SLOWONHIT_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SLOW_MOVE", "Ataques causam <style=cIsUtility>lentidão</style> nos inimigos em <style=cIsUtility>-60% de velocidade de movimento</style> por {0}.");
+				RegisterFragment("SLOW_BOTH", "Ataques causam <style=cIsUtility>lentidão</style> nos inimigos em <style=cIsUtility>-60% de velocidade de movimento</style> e <style=cIsUtility>-{0} de velocidade de ataque</style> por {1}.");
+				RegisterToken("ITEM_SLOWONHIT_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

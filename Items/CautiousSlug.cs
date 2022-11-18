@@ -69,8 +69,17 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default"; 
+				
 				RegisterFragment("SAFE_REGENERATION", "\nIncreases <style=cIsHealing>health regeneration</style> by {0} while out of danger.");
 				RegisterToken("ITEM_HEALWHILESAFE_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("SAFE_REGENERATION", "\nAumenta a <style=cIsHealing>regeneração de saúde</style> em {0} enquanto fora de perigo.");
+				RegisterToken("ITEM_HEALWHILESAFE_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
@@ -97,7 +106,7 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (output == "") output += "<style=cStack>(current configuration :: item with no effect)</style>";
+			if (output == "") output += TextFragment("CFG_NO_EFFECT");
 
 			return output;
 		}

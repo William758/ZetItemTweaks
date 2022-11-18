@@ -124,6 +124,8 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("ICE_STORM", "Killing enemies surrounds you with an <style=cIsDamage>ice storm</style>.");
 				RegisterFragment("ICE_STORM_GROW", "Killing enemies surrounds you with an <style=cIsDamage>ice storm</style> that <style=cIsDamage>grows with every kill</style>.");
 				RegisterFragment("ICICLE_COUNT", "\nGain up to a maximum of {0} icicles.");
@@ -132,6 +134,19 @@ namespace TPDespair.ZetItemTweaks
 				RegisterFragment("ICICLE_DAMAGE", "\nThe storm deals <style=cIsDamage>{0} damage per second</style> and <style=cIsUtility>slows</style> enemies by <style=cIsUtility>80%</style>.");
 				RegisterFragment("ICICLE_SCALING", "{0}% <style=cStack>(+{1}% per icicle)</style>");
 				RegisterToken("ITEM_ICICLE_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("ICE_STORM", "Abater um inimigo cria ao seu redor uma <style=cIsDamage>tempestade de gelo</style>.");
+				RegisterFragment("ICE_STORM_GROW", "Abater um inimigo cria ao seu redor uma <style=cIsDamage>tempestade de gelo</style> que <style=cIsDamage>aumenta a cada abate</style>.");
+				RegisterFragment("ICICLE_COUNT", "\nGanhe até um máximo de {0} pingentes de gelo.");
+				RegisterFragment("ICICLE_RADIUS", "\nRaio da tempestade de {0}.");
+				RegisterFragment("ICICLE_RADIUS_GROW", "\nRaio da tempestade de {0} <style=cStack>(+{1} por pingente de gelo)</style>.");
+				RegisterFragment("ICICLE_DAMAGE", "\nA tempestade causa <style=cIsDamage>{0} de dano por segundo</style> e causa <style=cIsUtility>lentidão</style> nos inimigos em <style=cIsUtility>80%</style>.");
+				RegisterFragment("ICICLE_SCALING", "{0}% <style=cStack>(+{1}% por pingente de gelo)</style>");
+				RegisterToken("ITEM_ICICLE_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;

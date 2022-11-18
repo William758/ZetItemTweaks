@@ -104,12 +104,25 @@ namespace TPDespair.ZetItemTweaks
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
+				targetLanguage = "default";
+
 				RegisterFragment("STEALTHKIT_ACTIVATION", "Falling below <style=cIsHealth>25%</style> health</style> {0} for {1}.");
 				RegisterFragment("STEALTHKIT_EFFECT", "causes you to gain <style=cIsUtility>40% movement speed</style> and <style=cIsUtility>invisibility</style>");
 				RegisterFragment("STEALTHKIT_DODGE", "causes you to gain {0} chance to <style=cIsHealing>dodge</style>, <style=cIsUtility>40% movement speed</style>, and <style=cIsUtility>invisibility</style>");
 				RegisterFragment("STEALTHKIT_RECHARGE", "\nRecharges {0}.");
 				RegisterFragment("STEALTHKIT_RECHARGE_REDUCE", "\nRecharges {0} <style=cStack>(-{1} per stack)</style>.");
 				RegisterToken("ITEM_PHASING_DESC", DescriptionText());
+
+				targetLanguage = "pt-BR";
+
+				RegisterFragment("STEALTHKIT_ACTIVATION", "Atingir menos de <style=cIsHealth>25%</style> de saúde</style> {0} por {1}.");
+				RegisterFragment("STEALTHKIT_EFFECT", "faz com que você ganhe <style=cIsUtility>40% de velocidade de movimento</style> e <style=cIsUtility>invisibilidade</style>");
+				RegisterFragment("STEALTHKIT_DODGE", "faz com que você ganhe {0} de chance de <style=cIsHealing>desviar</style>, <style=cIsUtility>40% de velocidade de movimento</style>, e <style=cIsUtility>invisibilidade</style>");
+				RegisterFragment("STEALTHKIT_RECHARGE", "\nRecarrega {0}.");
+				RegisterFragment("STEALTHKIT_RECHARGE_REDUCE", "\nRecarrega {0} <style=cStack>(-{1} por acúmulo)</style>.");
+				RegisterToken("ITEM_PHASING_DESC", DescriptionText());
+
+				targetLanguage = "";
 			}
 
 			appliedChanges = true;
