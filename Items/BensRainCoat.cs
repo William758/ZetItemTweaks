@@ -15,7 +15,7 @@ namespace TPDespair.ZetItemTweaks
 	{
 		public static GameObject ImmunityEffectPrefab;
 
-		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff" };
+		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff", "PhysicsFox.BetterBensRaincoat", "ImBonkers.OGRaincoat", "prototype.raincoat" };
 
 		public static string itemIdentifier = "BensRainCoat";
 		public static bool appliedChanges = false;

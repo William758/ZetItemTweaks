@@ -11,7 +11,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class HuntersHarpoon
 	{
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Hayaku.VanillaRebalance" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Hayaku.VanillaRebalance", "OakPrime.HuntersHarpoonRework", "com.Wolfo.RoRRHuntersHarpoon" };
 
 		public static string itemIdentifier = "HuntersHarpoon";
 		public static bool appliedChanges = false;

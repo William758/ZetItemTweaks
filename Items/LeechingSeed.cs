@@ -12,7 +12,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class LeechingSeed
 	{
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Withor.LeechingSeedBuff" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Withor.LeechingSeedBuff", "OakPrime.LeechingSeedBuff" };
 
 		public static string itemIdentifier = "LeechingSeed";
 		public static bool appliedChanges = false;

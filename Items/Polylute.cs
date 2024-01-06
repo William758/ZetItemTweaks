@@ -11,7 +11,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class Polylute
 	{
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "Hayaku.VanillaRebalance" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "Hayaku.VanillaRebalance", "OakPrime.PolyluteNerf" };
 
 		public static string itemIdentifier = "Polylute";
 		public static bool appliedChanges = false;

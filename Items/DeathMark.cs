@@ -14,7 +14,7 @@ namespace TPDespair.ZetItemTweaks
 		private static readonly List<DotController.DotIndex> DebuffDOT = new List<DotController.DotIndex>();
 		private static DotController.DotIndex DotIndexCount = 0;
 
-		public static List<string> autoCompatList = new List<string> { "com.Skell.DeathMarkChange" };
+		public static List<string> autoCompatList = new List<string> { "com.Skell.DeathMarkChange", "OakPrime.DeathMarkFix", "com.kking117.FlatItemBuff" };
 
 		public static string itemIdentifier = "DeathMark";
 		public static bool appliedChanges = false;

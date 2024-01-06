@@ -8,7 +8,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class TitanicKnurl
 	{
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Hayaku.VanillaRebalance" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Hayaku.VanillaRebalance", "OakPrime.KnurlBuff" };
 
 		public static string itemIdentifier = "TitanicKnurl";
 		public static bool appliedChanges = false;

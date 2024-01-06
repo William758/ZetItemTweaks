@@ -5,11 +5,14 @@ using MonoMod.Cil;
 using RoR2;
 
 using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
+using System.Reflection;
 
 namespace TPDespair.ZetItemTweaks
 {
 	internal static class StatHooks
 	{
+		public static FieldInfo StatsDirty;
+
 		internal static void Init()
 		{
 			MovementSpeedHook();
@@ -19,7 +22,10 @@ namespace TPDespair.ZetItemTweaks
 			AttackSpeedHook();
 			RegenHook();
 
+			StatsDirty = typeof(CharacterBody).GetField("statsDirty", BindingFlags.Instance | BindingFlags.NonPublic);
 			LateStatHook();
+
+			//OnLateSetup += LogRecalcStats;
 		}
 
 
@@ -734,7 +740,7 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchRet()
+					x => x.MatchStfld(StatsDirty)
 				);
 
 				if (found)
@@ -1079,5 +1085,16 @@ namespace TPDespair.ZetItemTweaks
 
 			return mult;
 		}
+
+
+		/*
+		private static void LogRecalcStats()
+		{
+			IL.RoR2.CharacterBody.RecalculateStats += (il) =>
+			{
+				LogWarn(il);
+			};
+		}
+		*/
 	}
 }

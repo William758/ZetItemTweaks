@@ -21,7 +21,7 @@ namespace TPDespair.ZetItemTweaks
 
 		public static GameObject NovaGenerator;
 
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "OakPrime.LeptonDaisyBuff" };
 
 		public static string itemIdentifier = "LeptonDaisy";
 		public static bool appliedChanges = false;
@@ -482,7 +482,7 @@ namespace TPDespair.ZetItemTweaks
 
 			if (timer <= 0f)
 			{
-				timer = 0.3f;
+				timer = 0.35f;
 
 				if (holdoutZone && buffDef)
 				{
@@ -494,7 +494,7 @@ namespace TPDespair.ZetItemTweaks
 		public void ApplyBuffAura()
 		{
 			bool buffCanStack = buffDef.canStack;
-			CharacterBody[] zoneHolders = CollectZoneHolders();
+			CharacterBody[] zoneHolders = CollectZoneHoldersOld();
 
 			for (int i = 0; i < zoneHolders.Length; i++)
 			{
@@ -502,16 +502,16 @@ namespace TPDespair.ZetItemTweaks
 
 				if (buffCanStack)
 				{
-					SetTimedBuffStacks(body, buffDef.buffIndex, 0.85f, buffCount);
+					SetTimedBuffStacks(body, buffDef.buffIndex, 0.9f, buffCount);
 				}
 				else
 				{
-					body.AddTimedBuff(buffDef, 0.85f);
+					body.AddTimedBuff(buffDef, 0.9f);
 				}
 			}
 		}
 
-		public CharacterBody[] CollectZoneHolders()
+		public CharacterBody[] CollectZoneHoldersOld()
 		{
 			ReadOnlyCollection<TeamComponent> teamMembers = TeamComponent.GetTeamMembers(teamIndex);
 			List<CharacterBody> bodyList = new List<CharacterBody>();

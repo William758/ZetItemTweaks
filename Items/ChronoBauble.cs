@@ -12,7 +12,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class ChronoBauble
 	{
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff" };
 
 		public static string itemIdentifier = "ChronoBauble";
 		public static bool appliedChanges = false;

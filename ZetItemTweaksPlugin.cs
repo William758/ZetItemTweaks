@@ -23,7 +23,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.2.2";
+		public const string ModVer = "1.2.3";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
@@ -617,6 +617,36 @@ namespace TPDespair.ZetItemTweaks
 
 		internal static void SetTimedBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration, int count)
 		{
+			for (int i = self.timedBuffs.Count - 1; i >= 0; i--)
+			{
+				CharacterBody.TimedBuff timedBuff = self.timedBuffs[i];
+				if (timedBuff.buffIndex == buffIndex)
+				{
+					if (count > 0)
+					{
+						count--;
+						timedBuff.timer = duration;
+					}
+					else
+					{
+						self.timedBuffs.RemoveAt(i);
+						self.RemoveBuff(timedBuff.buffIndex);
+					}
+				}
+			}
+
+			if (count > 0)
+			{
+				for (int i = 0; i < count; i++)
+				{
+					self.AddTimedBuff(buffIndex, duration);
+				}
+			}
+		}
+
+		// not very efficient
+		internal static void SetTimedBuffStacksOld(CharacterBody self, BuffIndex buffIndex, float duration, int count)
+		{
 			self.ClearTimedBuffs(buffIndex);
 			self.SetBuffCount(buffIndex, 0);
 
@@ -629,6 +659,7 @@ namespace TPDespair.ZetItemTweaks
 			}
 		}
 
+		// follows the same structure as above - rewrite this if you are going to call it frequently
 		internal static void SetCooldownBuffStacks(CharacterBody self, BuffIndex buffIndex, float duration)
 		{
 			self.ClearTimedBuffs(buffIndex);

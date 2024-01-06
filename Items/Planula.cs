@@ -11,7 +11,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class Planula
 	{
-		public static List<string> autoCompatList = new List<string> { };
+		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff" };
 
 		public static string itemIdentifier = "Planula";
 		public static bool appliedChanges = false;
