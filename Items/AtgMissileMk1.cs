@@ -114,7 +114,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -137,7 +137,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void ProcChanceHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -169,7 +169,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 

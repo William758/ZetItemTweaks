@@ -220,7 +220,7 @@ namespace TPDespair.ZetItemTweaks
 					}
 				}
 
-				if (Continuous.Value) output += TextFragment("HEALNOVA_CONTINUOUS");
+				//if (Continuous.Value) output += TextFragment("HEALNOVA_CONTINUOUS");
 			}
 
 			if (BaseHoldoutRegenFraction.Value > 0f)

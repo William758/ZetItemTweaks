@@ -291,9 +291,9 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DevilOrbHook()
 		{
-			On.RoR2.HealthComponent.ServerFixedUpdate += (orig, self) =>
+			On.RoR2.HealthComponent.ServerFixedUpdate += (orig, self, delta) =>
 			{
-				orig(self);
+				orig(self, delta);
 
 				if (self.alive && DisableDefaultHookSuccess)
 				{
@@ -302,7 +302,7 @@ namespace TPDespair.ZetItemTweaks
 						float threshold = self.fullCombinedHealth * ThresholdFraction.Value;
 						if (self.devilOrbHealPool > threshold)
 						{
-							self.devilOrbTimer -= Time.fixedDeltaTime;
+							self.devilOrbTimer -= delta;
 
 							if (self.devilOrbTimer <= 0f)
 							{

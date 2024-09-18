@@ -201,12 +201,12 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void BleedSeparationHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchLdloc(5),
+					x => x.MatchLdloc(out _),
 					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("BleedOnHitAndExplode")),
 					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount")
 				);
@@ -227,7 +227,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void BleedOnHitHook()
 		{
-			On.RoR2.GlobalEventManager.OnHitEnemy += (orig, self, damageInfo, victimObject) =>
+			On.RoR2.GlobalEventManager.ProcessHitEnemy += (orig, self, damageInfo, victimObject) =>
 			{
 				if (NetworkServer.active)
 				{
@@ -271,14 +271,14 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(92)
+					x => x.MatchStloc(98)
 				);
 
 				if (found)
 				{
 					c.Index += 1;
 
-					c.Emit(OpCodes.Ldloc, 51);
+					c.Emit(OpCodes.Ldloc, 55);
 					c.Emit(OpCodes.Ldloc, 15);
 					c.Emit(OpCodes.Ldloc, 2);
 					c.EmitDelegate<Func<int, CharacterBody, CharacterBody, float>>((count, attacker, victim) =>
@@ -290,7 +290,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return damage;
 					});
-					c.Emit(OpCodes.Stloc, 92);
+					c.Emit(OpCodes.Stloc, 98);
 				}
 				else
 				{

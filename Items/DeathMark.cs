@@ -20,6 +20,9 @@ namespace TPDespair.ZetItemTweaks
 		public static bool appliedChanges = false;
 		public static bool appliedDotDebuffFix = false;
 
+		private static int ItemCountLocIndex = 0;
+		private static int StlocCursorIndex = 0;
+
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
 		public static ConfigEntry<bool> EnableDotFix { get; set; }
@@ -95,11 +98,21 @@ namespace TPDespair.ZetItemTweaks
 			if (applyDotDebuffFix)
 			{
 				GatherDebuffDOT();
-				DotFixHook();
 
-				LogInfo(itemIdentifier + " :: DotDebuffFix Applied!");
+				if (StlocCursorIndex == 0) FindIndexHook();
 
-				appliedDotDebuffFix = true;
+				if (ItemCountLocIndex != 0)
+				{
+					DotFixHook();
+
+					LogInfo(itemIdentifier + " :: DotDebuffFix Applied!");
+
+					appliedDotDebuffFix = true;
+				}
+				else
+				{
+					LogWarn(itemIdentifier + " :: DotDebuffFix Failed!");
+				}
 			}
 		}
 
@@ -107,9 +120,19 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
-			CountHook();
-			DurationHook();
-			DamageHook();
+			if (StlocCursorIndex == 0) FindIndexHook();
+
+			if (ItemCountLocIndex != 0)
+			{
+				CountHook();
+				DurationHook();
+				DamageHook();
+			}
+			else
+			{
+				LogWarn(itemIdentifier + " :: LateSetup Failed!");
+				return;
+			}
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
@@ -206,63 +229,104 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		private static void DotFixHook()
+		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchLdloc(16),
-					x => x.MatchLdcI4(4)
+					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("DeathMark")),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchStloc(out ItemCountLocIndex)
 				);
 
 				if (found)
 				{
-					c.Index += 1;
+					StlocCursorIndex = c.Index;
+				}
+				else
+				{
+					LogWarn(itemIdentifier + " :: FindIndexHook Failed!");
+				}
+			};
+		}
 
-					// embed into if statement and use loc16
-					c.Emit(OpCodes.Ldloc, 103);
-					c.EmitDelegate<Func<int, DotController, int>>((count, dotController) =>
+		private static void DotFixHook()
+		{
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
+			{
+				ILCursor c = new ILCursor(il);
+
+				c.Index = StlocCursorIndex;
+
+				int DotConIndex = -1;
+
+				bool found = c.TryGotoNext(
+					x => x.MatchCallOrCallvirt<DotController>("FindDotController"),
+					x => x.MatchStloc(out DotConIndex)
+				);
+
+				if (found)
+				{
+					found = c.TryGotoNext(
+						x => x.MatchLdloc(ItemCountLocIndex + 1),
+						x => x.MatchLdcI4(4)
+					);
+
+					if (found)
 					{
-						if (dotController)
+						c.Index += 1;
+
+						// embed into if statement and use loc[??]
+						c.Emit(OpCodes.Ldloc, DotConIndex);
+						c.EmitDelegate<Func<int, DotController, int>>((count, dotController) =>
 						{
+							if (dotController)
+							{
 							//logger.LogMessage("DeathMarkCounter : " + count);
 
 							for (DotController.DotIndex dotIndex = 0; dotIndex < DotIndexCount; dotIndex++)
-							{
-								if (dotController.HasDotActive(dotIndex) && DebuffDOT.Contains(dotIndex))
 								{
+									if (dotController.HasDotActive(dotIndex) && DebuffDOT.Contains(dotIndex))
+									{
 									// was counted twice by buff and dot checks - reduce value
 									count--;
+									}
 								}
-							}
 
 							//logger.LogMessage("DeathMarkCounter (fixed) : " + count);
 						}
 
-						return count;
-					});
-					c.Emit(OpCodes.Stloc, 16);
+							return count;
+						});
+						c.Emit(OpCodes.Stloc, ItemCountLocIndex + 1);
 
-					// restore loc16
-					c.Emit(OpCodes.Ldloc, 16);
+						// restore loc[??] onto stack
+						c.Emit(OpCodes.Ldloc, ItemCountLocIndex + 1);
+					}
+					else
+					{
+						LogWarn(itemIdentifier + " :: DotFixHook Failed!");
+					}
 				}
 				else
 				{
-					LogWarn(itemIdentifier + " :: DotFixHook Failed!");
+					LogWarn(itemIdentifier + " :: DotFixHook:DotControllerIndex Failed!");
 				}
 			};
 		}
 
 		private static void CountHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = StlocCursorIndex;
+
 				bool found = c.TryGotoNext(
-					x => x.MatchLdloc(16),
+					x => x.MatchLdloc(ItemCountLocIndex + 1),
 					x => x.MatchLdcI4(4)
 				);
 
@@ -282,7 +346,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DurationHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -311,21 +375,23 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
+
+				int DamageIndex = -1;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdarg(1),
 					x => x.MatchLdfld<DamageInfo>("damage"),
-					x => x.MatchStloc(6)
+					x => x.MatchStloc(out DamageIndex)
 				);
 
 				if (found)
 				{
 					c.Index += 3;
 
-					c.Emit(OpCodes.Ldloc, 6);
+					c.Emit(OpCodes.Ldloc, DamageIndex);
 					c.Emit(OpCodes.Ldarg, 0);
 					c.Emit(OpCodes.Ldloc, 1);
 					c.EmitDelegate<Func<float, HealthComponent, CharacterBody, float>>((damage, healthComponent, attackBody) =>
@@ -353,12 +419,13 @@ namespace TPDespair.ZetItemTweaks
 
 							float target = 1f + BaseDamage.Value + StackDamage.Value * (count - 1);
 
+							// undo effect of default deathmark
 							damage *= target / 1.5f;
 						}
 
 						return damage;
 					});
-					c.Emit(OpCodes.Stloc, 6);
+					c.Emit(OpCodes.Stloc, DamageIndex);
 				}
 				else
 				{

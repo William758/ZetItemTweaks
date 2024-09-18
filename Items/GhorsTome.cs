@@ -152,32 +152,47 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
+				int ItemCountIndex = -1;
+
 				bool found = c.TryGotoNext(
-					x => x.MatchLdcR4(4f),
-					x => x.MatchLdloc(85),
-					x => x.MatchConvR4(),
-					x => x.MatchMul()
+					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("BonusGoldPackOnKill")),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchStloc(out ItemCountIndex)
 				);
 
 				if (found)
 				{
-					c.Index += 4;
+					found = c.TryGotoNext(
+						x => x.MatchLdcR4(4f),
+						x => x.MatchLdloc(ItemCountIndex),
+						x => x.MatchConvR4(),
+						x => x.MatchMul()
+					);
 
-					c.Emit(OpCodes.Pop);
-					c.Emit(OpCodes.Ldloc, 85);
-					c.EmitDelegate<Func<int, float>>((count) =>
+					if (found)
 					{
-						if (BaseChance.Value > 0f)
-						{
-							return BaseChance.Value + StackChance.Value * (count - 1);
-						}
+						c.Index += 4;
 
-						return 0f;
-					});
+						c.Emit(OpCodes.Pop);
+						c.Emit(OpCodes.Ldloc, ItemCountIndex);
+						c.EmitDelegate<Func<int, float>>((count) =>
+						{
+							if (BaseChance.Value > 0f)
+							{
+								return BaseChance.Value + StackChance.Value * (count - 1);
+							}
+
+							return 0f;
+						});
+					}
+					else
+					{
+						LogWarn(itemIdentifier + " :: GoldPackChanceHook Failed!");
+					}
 				}
 				else
 				{
-					Debug.LogWarning(itemIdentifier + " :: GoldPackChanceHook Failed!");
+					LogWarn(itemIdentifier + " :: GoldPackChanceHook:FindItemIndex Failed!");
 				}
 			};
 		}
@@ -220,7 +235,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 				else
 				{
-					Debug.LogWarning(itemIdentifier + " :: GoldFromKillHook Failed!");
+					LogWarn(itemIdentifier + " :: GoldFromKillHook Failed!");
 				}
 			};
 		}

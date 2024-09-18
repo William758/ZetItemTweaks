@@ -138,7 +138,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -161,7 +161,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -207,7 +207,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void ChillDurationHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -218,8 +218,7 @@ namespace TPDespair.ZetItemTweaks
 					x => x.MatchLdcR4(3f),
 					x => x.MatchLdloc(ItemCountLocIndex),
 					x => x.MatchConvR4(),
-					x => x.MatchMul(),
-					x => x.MatchCallOrCallvirt<CharacterBody>("AddTimedBuff")
+					x => x.MatchMul()
 				);
 
 				if (found)

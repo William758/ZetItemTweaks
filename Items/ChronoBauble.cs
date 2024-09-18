@@ -114,14 +114,16 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void SlowDurationHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				int ItemCountIndex = -1;
+
 				bool found = c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(RoR2Content.Buffs).GetField("Slow60")),
-					x => x.MatchLdcR4(2f),
-					x => x.MatchLdloc(10),
+					x => x.MatchLdcR4(out _),
+					x => x.MatchLdloc(out ItemCountIndex),
 					x => x.MatchConvR4(),
 					x => x.MatchMul()
 				);
@@ -131,7 +133,7 @@ namespace TPDespair.ZetItemTweaks
 					c.Index += 5;
 
 					c.Emit(OpCodes.Pop);
-					c.Emit(OpCodes.Ldloc, 10);
+					c.Emit(OpCodes.Ldloc, ItemCountIndex);
 					c.EmitDelegate<Func<int, float>>((count) =>
 					{
 						return Mathf.Max(1f, BaseDuration.Value + StackDuration.Value * (count - 1));

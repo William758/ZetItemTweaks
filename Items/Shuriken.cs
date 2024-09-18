@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -88,6 +89,8 @@ namespace TPDespair.ZetItemTweaks
 
 			DamageHook();
 			StackHook();
+
+			DisableFixHook();
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
@@ -222,6 +225,36 @@ namespace TPDespair.ZetItemTweaks
 						self.body.AddBuff(DLC1Content.Buffs.PrimarySkillShurikenBuff);
 						self.reloadTimer -= cooldown;
 					}
+				}
+			};
+		}
+
+		private static void DisableFixHook()
+		{
+			IL.RoR2.PrimarySkillShurikenBehavior.OnDisable += (il) =>
+			{
+				ILCursor c = new ILCursor(il);
+
+				bool found = c.TryGotoNext(
+					x => x.MatchCallOrCallvirt<CharacterBody>("HasBuff")
+				);
+
+				if (found)
+				{
+					c.Index += 1;
+
+					c.Emit(OpCodes.Ldarg, 0);
+					c.Emit(OpCodes.Ldfld, typeof(CharacterBody.ItemBehavior).GetField("body"));
+					c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, body) =>
+					{
+						if (hasBuff && NetworkServer.active) body.SetBuffCount(DLC1Content.Buffs.PrimarySkillShurikenBuff.buffIndex, 0);
+
+						return false;
+					});
+				}
+				else
+				{
+					LogWarn(itemIdentifier + " :: DisableFixHook Failed!");
 				}
 			};
 		}

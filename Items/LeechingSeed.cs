@@ -12,7 +12,7 @@ namespace TPDespair.ZetItemTweaks
 {
 	public static class LeechingSeed
 	{
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Withor.LeechingSeedBuff", "OakPrime.LeechingSeedBuff" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "Withor.LeechingSeedBuff", "OakPrime.LeechingSeedBuff", "com.Wolfo.WolfoItemBuffs" };
 
 		public static string itemIdentifier = "LeechingSeed";
 		public static bool appliedChanges = false;
@@ -61,7 +61,7 @@ namespace TPDespair.ZetItemTweaks
 			);
 			NoProcHealing = ConfigEntry(
 				itemIdentifier, "NoProcHealing", true,
-				"Heal from damage with 0 proc coefficient."
+				"Heal from damage with 0 proc coefficient. This allows DOTs to heal."
 			);
 			BaseHeal = ConfigEntry(
 				itemIdentifier, "BaseHeal", 2f,
@@ -171,7 +171,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DisableDefaultHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 

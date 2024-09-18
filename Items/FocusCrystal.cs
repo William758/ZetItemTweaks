@@ -117,7 +117,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void FindIndexHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -140,7 +140,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void RangeHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -171,7 +171,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 

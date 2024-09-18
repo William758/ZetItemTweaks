@@ -163,7 +163,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -173,7 +173,7 @@ namespace TPDespair.ZetItemTweaks
 				//LogInfo("RazorWire :: DamageHook - Added LocalVariable : " + hitTimeVar);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchCall<HealthComponent>("UpdateLastHitTime")
+					x => x.MatchCallOrCallvirt<HealthComponent>("UpdateLastHitTime")
 				);
 
 				if (found)
@@ -193,7 +193,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 
 				found = c.TryGotoNext(
-					x => x.MatchStloc(68)
+					x => x.MatchStloc(74)
 				);
 
 				if (found)
@@ -207,7 +207,7 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return healthComponent.body.damage * GetDamageCoefficient(damageInfo, hitTime, healthComponent.itemCounts.thorns);
 					});
-					c.Emit(OpCodes.Stloc, 68);
+					c.Emit(OpCodes.Stloc, 74);
 				}
 				else
 				{
@@ -237,12 +237,12 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void CountHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(64)
+					x => x.MatchStloc(70)
 				);
 
 				if (found)
@@ -260,7 +260,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 1;
 					});
-					c.Emit(OpCodes.Stloc, 64);
+					c.Emit(OpCodes.Stloc, 70);
 				}
 				else
 				{
@@ -271,12 +271,12 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void RangeHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(66)
+					x => x.MatchStloc(72)
 				);
 
 				if (found)
@@ -294,7 +294,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 5f;
 					});
-					c.Emit(OpCodes.Stloc, 66);
+					c.Emit(OpCodes.Stloc, 72);
 				}
 				else
 				{

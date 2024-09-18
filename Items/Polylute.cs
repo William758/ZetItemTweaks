@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using RoR2;
 using RoR2.Orbs;
 
 using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
@@ -15,6 +16,9 @@ namespace TPDespair.ZetItemTweaks
 
 		public static string itemIdentifier = "Polylute";
 		public static bool appliedChanges = false;
+
+		private static int ItemCountLocIndex = 0;
+		private static int StlocCursorIndex = 0;
 
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
@@ -75,9 +79,19 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
-			ProcChanceHook();
-			DamageHook();
-			StrikeCountHook();
+			FindIndexHook();
+
+			if (ItemCountLocIndex != 0)
+			{
+				ProcChanceHook();
+				DamageHook();
+				StrikeCountHook();
+			}
+			else
+			{
+				LogWarn(itemIdentifier + " :: LateSetup Failed!");
+				return;
+			}
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
@@ -115,15 +129,42 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		private static void ProcChanceHook()
+		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
+					x => x.MatchLdsfld(typeof(DLC1Content.Items).GetField("ChainLightningVoid")),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchStloc(out ItemCountLocIndex)
+				);
+
+				if (found)
+				{
+					StlocCursorIndex = c.Index;
+				}
+				else
+				{
+					LogWarn(itemIdentifier + " :: FindIndexHook Failed!");
+				}
+			};
+		}
+
+		private static void ProcChanceHook()
+		{
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
+			{
+				ILCursor c = new ILCursor(il);
+
+				c.Index = StlocCursorIndex;
+
+				int chanceIndex = -1;
+
+				bool found = c.TryGotoNext(
 					x => x.MatchLdcR4(25f),
-					x => x.MatchStloc(56)
+					x => x.MatchStloc(out chanceIndex)
 				);
 
 				if (found)
@@ -134,7 +175,7 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return ProcChance.Value;
 					});
-					c.Emit(OpCodes.Stloc, 56);
+					c.Emit(OpCodes.Stloc, chanceIndex);
 				}
 				else
 				{
@@ -145,25 +186,29 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = StlocCursorIndex;
+
+				int coeffIndex = -1;
+
 				bool found = c.TryGotoNext(
 					x => x.MatchLdcR4(0.6f),
-					x => x.MatchStloc(57)
+					x => x.MatchStloc(out coeffIndex)
 				);
 
 				if (found)
 				{
 					c.Index += 2;
 
-					c.Emit(OpCodes.Ldloc, 55);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.EmitDelegate<Func<int, float>>((count) =>
 					{
 						return BaseDamage.Value + StackDamage.Value * (count - 1);
 					});
-					c.Emit(OpCodes.Stloc, 57);
+					c.Emit(OpCodes.Stloc, coeffIndex);
 				}
 				else
 				{
@@ -174,7 +219,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void StrikeCountHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -185,7 +230,7 @@ namespace TPDespair.ZetItemTweaks
 				if (found)
 				{
 					c.Emit(OpCodes.Pop);
-					c.Emit(OpCodes.Ldloc, 55);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.EmitDelegate<Func<int, int>>((count) =>
 					{
 						return BaseCount.Value + StackCount.Value * (count - 1);

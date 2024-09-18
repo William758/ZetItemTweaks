@@ -124,7 +124,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void PulverizeApplicationHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -170,21 +170,21 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void PulverizeDamageHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdarg(1),
 					x => x.MatchLdfld<DamageInfo>("damage"),
-					x => x.MatchStloc(6)
+					x => x.MatchStloc(7)
 				);
 
 				if (found)
 				{
 					c.Index += 3;
 
-					c.Emit(OpCodes.Ldloc, 6);
+					c.Emit(OpCodes.Ldloc, 7);
 					c.Emit(OpCodes.Ldarg, 0);
 					c.Emit(OpCodes.Ldloc, 1);
 					c.EmitDelegate<Func<float, HealthComponent, CharacterBody, float>>((damage, healthComponent, attackBody) =>
@@ -214,7 +214,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return damage;
 					});
-					c.Emit(OpCodes.Stloc, 6);
+					c.Emit(OpCodes.Stloc, 7);
 				}
 				else
 				{

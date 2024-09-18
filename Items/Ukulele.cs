@@ -144,7 +144,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -167,13 +167,17 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void ProcChanceHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = StlocCursorIndex;
+
+				int chanceIndex = -1;
+
 				bool found = c.TryGotoNext(
 					x => x.MatchLdcR4(25f),
-					x => x.MatchStloc(50)
+					x => x.MatchStloc(out chanceIndex)
 				);
 
 				if (found)
@@ -184,7 +188,7 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return ProcChance.Value;
 					});
-					c.Emit(OpCodes.Stloc, 50);
+					c.Emit(OpCodes.Stloc, chanceIndex);
 				}
 				else
 				{
@@ -195,13 +199,17 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = StlocCursorIndex;
+
+				int coeffIndex = -1;
+
 				bool found = c.TryGotoNext(
 					x => x.MatchLdcR4(0.8f),
-					x => x.MatchStloc(51)
+					x => x.MatchStloc(out coeffIndex)
 				);
 
 				if (found)
@@ -213,7 +221,7 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return BaseDamage.Value + StackDamage.Value * (count - 1);
 					});
-					c.Emit(OpCodes.Stloc, 51);
+					c.Emit(OpCodes.Stloc, coeffIndex);
 				}
 				else
 				{
@@ -224,7 +232,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void TargetCountHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -256,7 +264,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void RangeHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 

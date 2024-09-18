@@ -155,7 +155,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void HealHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 

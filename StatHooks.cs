@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using UnityEngine;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 
 using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
-using System.Reflection;
 
 namespace TPDespair.ZetItemTweaks
 {
@@ -13,8 +13,16 @@ namespace TPDespair.ZetItemTweaks
 	{
 		public static FieldInfo StatsDirty;
 
+		private static BodyIndex artifactShellBodyIndex = BodyIndex.None;
+		private static BodyIndex goldenTitanBodyIndex = BodyIndex.None;
+
+		private static BuffIndex reactorInvuln = BuffIndex.None;
+		private static BuffIndex waterInvuln = BuffIndex.None;
+
 		internal static void Init()
 		{
+			OnLateSetup += LateSetup;
+
 			MovementSpeedHook();
 			DamageHook();
 			ShieldHook();
@@ -28,6 +36,22 @@ namespace TPDespair.ZetItemTweaks
 			//OnLateSetup += LogRecalcStats;
 		}
 
+		internal static void LateSetup()
+		{
+			artifactShellBodyIndex = BodyCatalog.FindBodyIndex("ArtifactShellBody");
+			goldenTitanBodyIndex = BodyCatalog.FindBodyIndex("TitanGoldBody");
+
+			if (PluginLoaded("com.TeamMoonstorm.Starstorm2-Nightly"))
+			{
+				reactorInvuln = BuffCatalog.FindBuffIndex("BuffReactor");
+			}
+
+			if (PluginLoaded("com.themysticsword.risingtides"))
+			{
+				waterInvuln = BuffCatalog.FindBuffIndex("RisingTides_WaterInvincibility");
+			}
+		}
+
 
 		
 		private static void MovementSpeedHook()
@@ -36,9 +60,9 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int baseValue = 74;
-				const int multValue = 75;
-				const int divValue = 76;
+				const int baseValue = 84;
+				const int multValue = 85;
+				const int divValue = 86;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdloc(baseValue),
@@ -173,8 +197,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int baseValue = 78;
-				const int multValue = 79;
+				const int baseValue = 88;
+				const int multValue = 89;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdloc(baseValue),
@@ -241,20 +265,28 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int shieldValue = 64;
+				int shieldValue = -1;
+
+				if (c.TryGotoNext(x => x.MatchLdfld<Inventory>("beadAppliedShield")))
+				{
+					c.TryGotoNext(x => x.MatchStloc(out shieldValue));
+				}
+				else
+				{
+					LogWarn("ShieldHook Failed - Could not find shield index");
+					return;
+				}
+
+
 
 				bool found = c.TryGotoNext(
-					x => x.MatchMul(),
-					x => x.MatchAdd(),
-					x => x.MatchStloc(shieldValue)
+					x => x.MatchLdsfld(typeof(RoR2Content.Buffs).GetField("EngiShield")),
+					x => x.MatchCallOrCallvirt<CharacterBody>("HasBuff")
 				);
 
 				if (found)
 				{
-					c.Index += 3;
-
 					// add
-					c.Emit(OpCodes.Ldarg, 0);
 					c.Emit(OpCodes.Ldloc, shieldValue);
 					c.Emit(OpCodes.Ldarg, 0);
 					c.Emit(OpCodes.Callvirt, typeof(CharacterBody).GetMethod("get_maxHealth"));
@@ -297,6 +329,8 @@ namespace TPDespair.ZetItemTweaks
 						return shield;
 					});
 					c.Emit(OpCodes.Stloc, shieldValue);
+
+					c.Emit(OpCodes.Ldarg, 0);
 				}
 				else
 				{
@@ -311,8 +345,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int baseValue = 62;
-				const int multValue = 63;
+				const int baseValue = 70;
+				const int multValue = 71;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdloc(baseValue),
@@ -443,8 +477,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int baseValue = 82;
-				const int multValue = 83;
+				const int baseValue = 94;
+				const int multValue = 95;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdloc(baseValue),
@@ -553,10 +587,10 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int lvlScaling = 66;
-				const int knurlValue = 67;
-				const int crocoValue = 70;
-				const int multValue = 72;
+				const int lvlScaling = 75;
+				const int knurlValue = 76;
+				const int crocoValue = 79;
+				const int multValue = 82;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdcR4(1f),
@@ -713,20 +747,30 @@ namespace TPDespair.ZetItemTweaks
 			};
 		}
 
-		private static bool AllowPercentHealthRegen(CharacterBody body)
+		internal static bool AllowPercentHealthRegen(CharacterBody body)
 		{
 			TeamIndex teamIndex = body.teamComponent.teamIndex;
 
 			if (teamIndex == TeamIndex.Player || body.outOfDanger)
 			{
-				if (!body.HasBuff(RoR2Content.Buffs.HiddenInvincibility) && !body.HasBuff(RoR2Content.Buffs.Immune))
+				if (!HasInvulnBuff(body))
 				{
-					if (body.baseNameToken != "ARTIFACTSHELL_BODY_NAME" && body.baseNameToken != "TITANGOLD_BODY_NAME")
+					if (body.bodyIndex != artifactShellBodyIndex && body.bodyIndex != goldenTitanBodyIndex)
 					{
 						return true;
 					}
 				}
 			}
+
+			return false;
+		}
+
+		internal static bool HasInvulnBuff(CharacterBody body)
+		{
+			if (body.HasBuff(RoR2Content.Buffs.HiddenInvincibility)) return true;
+			if (body.HasBuff(RoR2Content.Buffs.Immune)) return true;
+			if (body.HasBuff(reactorInvuln)) return true;
+			if (body.HasBuff(waterInvuln)) return true;
 
 			return false;
 		}

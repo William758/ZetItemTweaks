@@ -17,6 +17,9 @@ namespace TPDespair.ZetItemTweaks
 		public static string itemIdentifier = "BrilliantBehemoth";
 		public static bool appliedChanges = false;
 
+		private static int ItemCountLocIndex = 0;
+		private static int StlocCursorIndex = 0;
+
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
 		public static ConfigEntry<float> BaseDamage { get; set; }
@@ -76,9 +79,19 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
-			RadiusHook();
-			DamageHook();
-			FalloffHook();
+			FindIndexHook();
+
+			if (ItemCountLocIndex != 0)
+			{
+				RadiusHook();
+				DamageHook();
+				FalloffHook();
+			}
+			else
+			{
+				LogWarn(itemIdentifier + " :: LateSetup Failed!");
+				return;
+			}
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
@@ -111,14 +124,39 @@ namespace TPDespair.ZetItemTweaks
 
 
 
-		private static void RadiusHook()
+		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+			IL.RoR2.GlobalEventManager.OnHitAllProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(4)
+					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("Behemoth")),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchStloc(out ItemCountLocIndex)
+				);
+
+				if (found)
+				{
+					StlocCursorIndex = c.Index;
+				}
+				else
+				{
+					LogWarn(itemIdentifier + " :: FindIndexHook Failed!");
+				}
+			};
+		}
+
+		private static void RadiusHook()
+		{
+			IL.RoR2.GlobalEventManager.OnHitAllProcess += (il) =>
+			{
+				ILCursor c = new ILCursor(il);
+
+				c.Index = StlocCursorIndex;
+
+				bool found = c.TryGotoNext(
+					x => x.MatchStloc(ItemCountLocIndex + 1)
 				);
 
 				if (found)
@@ -126,14 +164,14 @@ namespace TPDespair.ZetItemTweaks
 					c.Index += 1;
 
 					c.Emit(OpCodes.Ldarg, 1);
-					c.Emit(OpCodes.Ldloc, 3);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.EmitDelegate<Func<DamageInfo, int, float>>((damageInfo, count) =>
 					{
 						float proc = Mathf.Max(0.25f, damageInfo.procCoefficient);
 
 						return (BaseRadius.Value + StackRadius.Value * (count - 1)) * proc;
 					});
-					c.Emit(OpCodes.Stloc, 4);
+					c.Emit(OpCodes.Stloc, ItemCountLocIndex + 1);
 				}
 				else
 				{
@@ -144,24 +182,26 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DamageHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+			IL.RoR2.GlobalEventManager.OnHitAllProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = StlocCursorIndex;
+
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(5)
+					x => x.MatchStloc(ItemCountLocIndex + 2)
 				);
 
 				if (found)
 				{
 					c.Index += 1;
 
-					c.Emit(OpCodes.Ldloc, 3);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.EmitDelegate<Func<int, float>>((count) =>
 					{
 						return BaseDamage.Value + StackDamage.Value * (count - 1);
 					});
-					c.Emit(OpCodes.Stloc, 5);
+					c.Emit(OpCodes.Stloc, ItemCountLocIndex + 2);
 				}
 				else
 				{
@@ -172,12 +212,14 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void FalloffHook()
 		{
-			IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+			IL.RoR2.GlobalEventManager.OnHitAllProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = StlocCursorIndex;
+
 				bool found = c.TryGotoNext(
-					x => x.MatchLdloc(4),
+					x => x.MatchLdloc(ItemCountLocIndex + 1),
 					x => x.MatchStfld(typeof(BlastAttack).GetField("radius"))
 				);
 

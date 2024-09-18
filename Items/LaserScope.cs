@@ -8,7 +8,7 @@ namespace TPDespair.ZetItemTweaks
 {
     public static class LaserScope
     {
-		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff" };
+		public static List<string> autoCompatList = new List<string> { "com.kking117.FlatItemBuff", "com.Wolfo.WolfoItemBuffs", "quasikyo.LaserScopeCritChance" };
 
 		public static string itemIdentifier = "LaserScope";
 		public static bool appliedChanges = false;

@@ -21,7 +21,7 @@ namespace TPDespair.ZetItemTweaks
 		private static ArtifactIndex DiluvianArtifactIndex = ArtifactIndex.None;
 		internal static BuffDef EvadeBuff;
 
-		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff" };
+		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "com.kking117.FlatItemBuff", "noodlegemo.SeekingItemReworks" };
 
 		public static string itemIdentifier = "OldWarStealthKit";
 		public static bool appliedChanges = false;
@@ -221,7 +221,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DodgeHook()
 		{
-			IL.RoR2.HealthComponent.TakeDamage += (il) =>
+			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
