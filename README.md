@@ -349,6 +349,18 @@ Brazilian Portuguese translation by SpookyGabe#9476.
 
 ## Changelog:
 
+**1.3.1**
+
+```
+Fixed broken stuff from latest game update.
+```
+
+**1.3.0**
+
+```
+Updated for SotS. Added some AutoCompat entries.
+```
+
 **1.2.3**
 
 ```

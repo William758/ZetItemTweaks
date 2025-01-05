@@ -4,7 +4,7 @@ using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
-
+using UnityEngine;
 using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
 
 namespace TPDespair.ZetItemTweaks
@@ -382,20 +382,23 @@ namespace TPDespair.ZetItemTweaks
 				int DamageIndex = -1;
 
 				bool found = c.TryGotoNext(
-					x => x.MatchLdarg(1),
 					x => x.MatchLdfld<DamageInfo>("damage"),
 					x => x.MatchStloc(out DamageIndex)
 				);
 
 				if (found)
 				{
-					c.Index += 3;
+					c.Index += 2;
 
 					c.Emit(OpCodes.Ldloc, DamageIndex);
 					c.Emit(OpCodes.Ldarg, 0);
-					c.Emit(OpCodes.Ldloc, 1);
-					c.EmitDelegate<Func<float, HealthComponent, CharacterBody, float>>((damage, healthComponent, attackBody) =>
+					c.Emit(OpCodes.Ldarg, 1);
+					c.EmitDelegate<Func<float, HealthComponent, DamageInfo, float>>((damage, healthComponent, damageInfo) =>
 					{
+						GameObject attacker = damageInfo.attacker;
+						if (!attacker) return damage;
+
+						CharacterBody attackBody = attacker.GetComponent<CharacterBody>();
 						if (!attackBody) return damage;
 
 						CharacterBody self = healthComponent.body;

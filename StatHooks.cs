@@ -477,8 +477,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				const int baseValue = 94;
-				const int multValue = 95;
+				const int baseValue = 96;
+				const int multValue = 97;
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdloc(baseValue),

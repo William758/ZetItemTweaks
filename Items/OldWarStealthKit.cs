@@ -226,7 +226,6 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchLdarg(1),
 					x => x.MatchLdfld<DamageInfo>("rejected"),
 					x => x.MatchBrtrue(out _),
 					x => x.MatchLdarg(0),
@@ -236,11 +235,11 @@ namespace TPDespair.ZetItemTweaks
 
 				if (found)
 				{
-					c.Index += 1;
-
+					// loc.1 DamageInfo on stack
+					c.Emit(OpCodes.Dup);
+					c.Emit(OpCodes.Dup);
 					c.Emit(OpCodes.Ldarg, 0);
-					c.Emit(OpCodes.Ldarg, 1);
-					c.EmitDelegate<Func<HealthComponent, DamageInfo, bool>>((healthComponent, damageInfo) =>
+					c.EmitDelegate<Func<DamageInfo, HealthComponent, bool>>((damageInfo, healthComponent) =>
 					{
 						if (damageInfo.rejected) return true;
 
@@ -279,8 +278,6 @@ namespace TPDespair.ZetItemTweaks
 						return false;
 					});
 					c.Emit(OpCodes.Stfld, DamageInfoRejectedField);
-
-					c.Emit(OpCodes.Ldarg, 1);
 				}
 				else
 				{

@@ -7,6 +7,7 @@ using MonoMod.Cil;
 using RoR2;
 
 using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
+using RoR2.Orbs;
 
 namespace TPDespair.ZetItemTweaks
 {
@@ -193,13 +194,35 @@ namespace TPDespair.ZetItemTweaks
 				}
 
 				found = c.TryGotoNext(
-					x => x.MatchStloc(74)
+					x => x.MatchLdfld(typeof(HealthComponent.ItemCounts).GetField("thorns"))
+				);
+
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: DamageHook:AdvanceThorns Failed!");
+					LogWarn("!!! - Aborting RazorWire :: DamageHook");
+					return;
+				}
+
+				found = c.TryGotoNext(
+					x => x.MatchLdcI4(6),
+					x => x.MatchStfld(typeof(LightningOrb).GetField("lightningType"))
+				);
+
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: DamageHook:MatchOrbType Failed!");
+					LogWarn("!!! - Aborting RazorWire :: DamageHook");
+					return;
+				}
+
+				found = c.TryGotoPrev(MoveType.Before,
+					x => x.MatchStfld(typeof(LightningOrb).GetField("damageValue"))
 				);
 
 				if (found)
 				{
-					c.Index += 1;
-
+					c.Emit(OpCodes.Pop);
 					c.Emit(OpCodes.Ldarg, 0);
 					c.Emit(OpCodes.Ldarg, 1);
 					c.Emit(OpCodes.Ldloc, hitTimeVar);
@@ -207,11 +230,10 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return healthComponent.body.damage * GetDamageCoefficient(damageInfo, hitTime, healthComponent.itemCounts.thorns);
 					});
-					c.Emit(OpCodes.Stloc, 74);
 				}
 				else
 				{
-					LogWarn(itemIdentifier + " :: DamageHook:SetDamageMult Failed!");
+					LogWarn(itemIdentifier + " :: DamageHook:SetDamageValue Failed!");
 				}
 			};
 		}
@@ -242,7 +264,18 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(70)
+					x => x.MatchLdfld(typeof(HealthComponent.ItemCounts).GetField("thorns"))
+				);
+
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: CountHook:AdvanceThorns Failed!");
+					LogWarn("!!! - Aborting RazorWire :: CountHook");
+					return;
+				}
+
+				found = c.TryGotoNext(
+					x => x.MatchStloc(84)
 				);
 
 				if (found)
@@ -260,7 +293,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 1;
 					});
-					c.Emit(OpCodes.Stloc, 70);
+					c.Emit(OpCodes.Stloc, 84);
 				}
 				else
 				{
@@ -276,7 +309,18 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(72)
+					x => x.MatchLdfld(typeof(HealthComponent.ItemCounts).GetField("thorns"))
+				);
+
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: RangeHook:AdvanceThorns Failed!");
+					LogWarn("!!! - Aborting RazorWire :: CountHook");
+					return;
+				}
+
+				found = c.TryGotoNext(
+					x => x.MatchStloc(86)
 				);
 
 				if (found)
@@ -294,7 +338,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 5f;
 					});
-					c.Emit(OpCodes.Stloc, 72);
+					c.Emit(OpCodes.Stloc, 86);
 				}
 				else
 				{
