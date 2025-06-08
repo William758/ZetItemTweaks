@@ -20,8 +20,8 @@ namespace TPDespair.ZetItemTweaks
 		public static bool appliedChanges = false;
 		public static bool appliedDotDebuffFix = false;
 
-		private static int ItemCountLocIndex = 0;
-		private static int StlocCursorIndex = 0;
+		private static int ItemCountLocIndex = -1;
+		private static int StlocCursorIndex = -1;
 
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
@@ -99,9 +99,9 @@ namespace TPDespair.ZetItemTweaks
 			{
 				GatherDebuffDOT();
 
-				if (StlocCursorIndex == 0) FindIndexHook();
+				if (StlocCursorIndex == -1) FindIndexHook();
 
-				if (ItemCountLocIndex != 0)
+				if (ItemCountLocIndex != -1)
 				{
 					DotFixHook();
 
@@ -120,13 +120,12 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
-			if (StlocCursorIndex == 0) FindIndexHook();
+			if (StlocCursorIndex == -1) FindIndexHook();
 
-			if (ItemCountLocIndex != 0)
+			if (ItemCountLocIndex != -1)
 			{
 				CountHook();
 				DurationHook();
-				DamageHook();
 			}
 			else
 			{
@@ -231,7 +230,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void FindIndexHook()
 		{
-			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcDeathMark += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -254,7 +253,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DotFixHook()
 		{
-			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcDeathMark += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -284,9 +283,9 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (dotController)
 							{
-							//logger.LogMessage("DeathMarkCounter : " + count);
+								//logger.LogMessage("DeathMarkCounter : " + count);
 
-							for (DotController.DotIndex dotIndex = 0; dotIndex < DotIndexCount; dotIndex++)
+								for (DotController.DotIndex dotIndex = 0; dotIndex < DotIndexCount; dotIndex++)
 								{
 									if (dotController.HasDotActive(dotIndex) && DebuffDOT.Contains(dotIndex))
 									{
@@ -295,8 +294,8 @@ namespace TPDespair.ZetItemTweaks
 									}
 								}
 
-							//logger.LogMessage("DeathMarkCounter (fixed) : " + count);
-						}
+								//logger.LogMessage("DeathMarkCounter (fixed) : " + count);
+							}
 
 							return count;
 						});
@@ -319,7 +318,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void CountHook()
 		{
-			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcDeathMark += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -346,12 +345,11 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DurationHook()
 		{
-			IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
+			IL.RoR2.GlobalEventManager.ProcDeathMark += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchLdloc(out _),
 					x => x.MatchLdsfld(typeof(RoR2Content.Buffs).GetField("DeathMark")),
 					x => x.MatchLdcR4(7f),
 					x => x.MatchLdloc(out _),
@@ -361,7 +359,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (found)
 				{
-					c.Index += 6;
+					c.Index += 5;
 
 					c.Emit(OpCodes.Pop);
 					c.Emit(OpCodes.Ldc_R4, DebuffDuration.Value);
@@ -369,70 +367,6 @@ namespace TPDespair.ZetItemTweaks
 				else
 				{
 					LogWarn(itemIdentifier + " :: DurationHook Failed!");
-				}
-			};
-		}
-
-		private static void DamageHook()
-		{
-			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
-			{
-				ILCursor c = new ILCursor(il);
-
-				int DamageIndex = -1;
-
-				bool found = c.TryGotoNext(
-					x => x.MatchLdfld<DamageInfo>("damage"),
-					x => x.MatchStloc(out DamageIndex)
-				);
-
-				if (found)
-				{
-					c.Index += 2;
-
-					c.Emit(OpCodes.Ldloc, DamageIndex);
-					c.Emit(OpCodes.Ldarg, 0);
-					c.Emit(OpCodes.Ldarg, 1);
-					c.EmitDelegate<Func<float, HealthComponent, DamageInfo, float>>((damage, healthComponent, damageInfo) =>
-					{
-						GameObject attacker = damageInfo.attacker;
-						if (!attacker) return damage;
-
-						CharacterBody attackBody = attacker.GetComponent<CharacterBody>();
-						if (!attackBody) return damage;
-
-						CharacterBody self = healthComponent.body;
-						if (!self) return damage;
-
-						if (self.HasBuff(RoR2Content.Buffs.DeathMark))
-						{
-							int count = 0;
-
-							if (PlayerTeamStack.Value && attackBody.teamComponent.teamIndex == TeamIndex.Player)
-							{
-								count = Util.GetItemCountForTeam(TeamIndex.Player, RoR2Content.Items.DeathMark.itemIndex, true, true);
-							}
-							else
-							{
-								Inventory inventory = attackBody.inventory;
-								if (inventory) count = inventory.GetItemCount(RoR2Content.Items.DeathMark);
-							}
-
-							count = Math.Max(1, count);
-
-							float target = 1f + BaseDamage.Value + StackDamage.Value * (count - 1);
-
-							// undo effect of default deathmark
-							damage *= target / 1.5f;
-						}
-
-						return damage;
-					});
-					c.Emit(OpCodes.Stloc, DamageIndex);
-				}
-				else
-				{
-					LogWarn(itemIdentifier + " :: DamageHook Failed!");
 				}
 			};
 		}

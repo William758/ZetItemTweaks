@@ -17,8 +17,8 @@ namespace TPDespair.ZetItemTweaks
 		public static string itemIdentifier = "FocusCrystal";
 		public static bool appliedChanges = false;
 
-		private static int ItemCountLocIndex = 0;
-		private static int StlocCursorIndex = 0;
+		public static bool rangeHook = false;
+		public static bool damageHook = false;
 
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
@@ -69,16 +69,12 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
-			FindIndexHook();
+			RangeHook();
+			DamageHook();
 
-			if (ItemCountLocIndex != 0)
-			{
-				RangeHook();
-				DamageHook();
+			if (rangeHook) ScaleIndicator();
 
-				ScaleIndicator();
-			}
-			else
+			if (!rangeHook && !damageHook)
 			{
 				LogWarn(itemIdentifier + " :: LateSetup Failed!");
 				return;
@@ -104,39 +100,27 @@ namespace TPDespair.ZetItemTweaks
 
 		private static string DescriptionText()
 		{
-			string output = String.Format(
-				TextFragment("NEARBY_DAMAGE", true),
-				ScalingText(NearbyRange.Value, "distance", "cIsDamage"),
-				ScalingText(BaseDamage.Value, StackDamage.Value, "percent", "cIsDamage")
-			);
+			float range = rangeHook ? NearbyRange.Value : 13f;
 
-			return output;
-		}
-
-
-
-		private static void FindIndexHook()
-		{
-			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
+			if (damageHook)
 			{
-				ILCursor c = new ILCursor(il);
-
-				bool found = c.TryGotoNext(
-					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("NearbyDamageBonus")),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
-					x => x.MatchStloc(out ItemCountLocIndex)
+				return String.Format(
+					TextFragment("NEARBY_DAMAGE", true),
+					ScalingText(range, "distance", "cIsDamage"),
+					ScalingText(BaseDamage.Value, StackDamage.Value, "percent", "cIsDamage")
 				);
-
-				if (found)
-				{
-					StlocCursorIndex = c.Index;
-				}
-				else
-				{
-					LogWarn(itemIdentifier + " :: FindIndexHook Failed!");
-				}
-			};
+			}
+			else
+			{
+				return String.Format(
+					TextFragment("NEARBY_DAMAGE", true),
+					ScalingText(range, "distance", "cIsDamage"),
+					ScalingText(0.2f, 0.2f, "percent", "cIsDamage")
+				);
+			}
 		}
+
+
 
 		private static void RangeHook()
 		{
@@ -144,9 +128,16 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				c.Index = StlocCursorIndex;
+				bool found = c.TryGotoNext(x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("NearbyDamageBonus")));
 
-				bool found = c.TryGotoNext(
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: RangeHook Failed - Could not find NearbyDamageBonus!");
+					return;
+				}
+
+
+				found = c.TryGotoNext(
 					x => x.MatchCallOrCallvirt<Vector3>("get_sqrMagnitude"),
 					x => x.MatchLdcR4(169f)
 				);
@@ -161,6 +152,8 @@ namespace TPDespair.ZetItemTweaks
 						float range = NearbyRange.Value;
 						return range * range;
 					});
+
+					rangeHook = true;
 				}
 				else
 				{
@@ -175,17 +168,25 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
-				c.Index = StlocCursorIndex;
+				bool found = c.TryGotoNext(x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("NearbyDamageBonus")));
 
-				bool found = c.TryGotoNext(
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: DamageHook Failed - Could not find NearbyDamageBonus!");
+					return;
+				}
+
+
+
+				found = c.TryGotoNext(
 					x => x.MatchLdloc(out _),
 					x => x.MatchLdcR4(1f),
-					x => x.MatchLdloc(ItemCountLocIndex),
+					x => x.MatchLdloc(out _),
 					// Removed Instructions
 					x => x.MatchConvR4(),
 					x => x.MatchLdcR4(0.2f),
 					x => x.MatchMul(),
-					// ---
+					// --- bruh
 					x => x.MatchAdd(),
 					x => x.MatchMul(),
 					x => x.MatchStloc(out _)
@@ -201,6 +202,8 @@ namespace TPDespair.ZetItemTweaks
 					{
 						return BaseDamage.Value + StackDamage.Value * (count - 1);
 					});
+
+					damageHook = true;
 				}
 				else
 				{

@@ -263,6 +263,8 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
+				int ThornCountLocIndex = -1;
+
 				bool found = c.TryGotoNext(
 					x => x.MatchLdfld(typeof(HealthComponent.ItemCounts).GetField("thorns"))
 				);
@@ -274,8 +276,10 @@ namespace TPDespair.ZetItemTweaks
 					return;
 				}
 
+
+
 				found = c.TryGotoNext(
-					x => x.MatchStloc(84)
+					x => x.MatchStloc(out ThornCountLocIndex)
 				);
 
 				if (found)
@@ -293,7 +297,7 @@ namespace TPDespair.ZetItemTweaks
 
 						return 1;
 					});
-					c.Emit(OpCodes.Stloc, 84);
+					c.Emit(OpCodes.Stloc, ThornCountLocIndex);
 				}
 				else
 				{
@@ -315,17 +319,17 @@ namespace TPDespair.ZetItemTweaks
 				if (!found)
 				{
 					LogWarn(itemIdentifier + " :: RangeHook:AdvanceThorns Failed!");
-					LogWarn("!!! - Aborting RazorWire :: CountHook");
+					LogWarn("!!! - Aborting RazorWire :: RangeHook");
 					return;
 				}
 
 				found = c.TryGotoNext(
-					x => x.MatchStloc(86)
+					x => x.MatchStfld<SphereSearch>("radius")
 				);
 
 				if (found)
 				{
-					c.Index += 1;
+					c.Emit(OpCodes.Pop);
 
 					c.Emit(OpCodes.Ldarg, 0);
 					c.EmitDelegate<Func<HealthComponent, float>>((healthComponent) =>
@@ -338,7 +342,6 @@ namespace TPDespair.ZetItemTweaks
 
 						return 5f;
 					});
-					c.Emit(OpCodes.Stloc, 86);
 				}
 				else
 				{

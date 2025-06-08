@@ -23,7 +23,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.3.1";
+		public const string ModVer = "1.3.2";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
@@ -238,6 +238,11 @@ namespace TPDespair.ZetItemTweaks
 		internal static void LogWarn(object data)
 		{
 			logSource.LogWarning(data);
+		}
+
+		internal static void LogError(object data)
+		{
+			logSource.LogError(data);
 		}
 
 

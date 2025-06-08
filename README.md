@@ -25,7 +25,7 @@ To use the changes from this mod, disable the changes made in the other mod and 
 ### Bison Steak
 
 ```
-- Killing an enemy increases health regeneration 2.4 hp/s for 3 (+2 per stack) seconds.
+- Killing an enemy increases health regeneration by 2.4 hp/s for 3 (+2 per stack) seconds.
 ```
 
 ### Cautious Slug
@@ -348,6 +348,12 @@ Use r2modman or place inside of Risk of Rain 2/Bepinex/Plugins/
 Brazilian Portuguese translation by SpookyGabe#9476.
 
 ## Changelog:
+
+**1.3.2**
+
+```
+Fixed broken stuff from latest game update.
+```
 
 **1.3.1**
 
