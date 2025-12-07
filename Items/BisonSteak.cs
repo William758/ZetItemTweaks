@@ -189,7 +189,7 @@ namespace TPDespair.ZetItemTweaks
 								Inventory inventory = body.inventory;
 								if (inventory)
 								{
-									int count = inventory.GetItemCount(RoR2Content.Items.FlatHealth);
+									int count = inventory.GetItemCountEffective(RoR2Content.Items.FlatHealth);
 									if (count > 0)
 									{
 										float duration = BaseBuffDuration.Value + StackBuffDuration.Value * (count - 1);

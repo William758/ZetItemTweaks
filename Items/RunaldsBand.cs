@@ -9,11 +9,11 @@ using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
 
 namespace TPDespair.ZetItemTweaks
 {
-	public static class RenaldsBand
+	public static class RunaldsBand
 	{
 		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod" };
 
-		public static string itemIdentifier = "RenaldsBand";
+		public static string itemIdentifier = "RunaldsBand";
 		public static bool appliedChanges = false;
 		public static bool appliedChillDurationHook = false;
 
@@ -144,7 +144,7 @@ namespace TPDespair.ZetItemTweaks
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("IceRing")),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective"),
 					x => x.MatchStloc(out ItemCountLocIndex)
 				);
 

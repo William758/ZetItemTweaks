@@ -23,7 +23,7 @@ namespace TPDespair.ZetItemTweaks
 
 	public class ZetItemTweaksPlugin : BaseUnityPlugin
 	{
-		public const string ModVer = "1.3.2";
+		public const string ModVer = "1.4.0";
 		public const string ModName = "ZetItemTweaks";
 		public const string ModGuid = "com.TPDespair.ZetItemTweaks";
 
@@ -115,7 +115,7 @@ namespace TPDespair.ZetItemTweaks
 			////WillotheWisp.Init();
 			KjarosBand.Init();
 			HarvestersScythe.Init();
-			RenaldsBand.Init();
+			RunaldsBand.Init();
 			AtgMissileMk1.Init();
 			HuntersHarpoon.Init();
 			OldWarStealthKit.Init();

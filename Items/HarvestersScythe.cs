@@ -123,9 +123,11 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
+				int ItemCountLocIndex = -1;
+
 				bool found = c.TryGotoNext(
 					x => x.MatchLdcR4(4f),
-					x => x.MatchLdloc(4),
+					x => x.MatchLdloc(out ItemCountLocIndex),
 					x => x.MatchConvR4(),
 					x => x.MatchLdcR4(4f),
 					x => x.MatchMul(),
@@ -139,7 +141,7 @@ namespace TPDespair.ZetItemTweaks
 					c.Index += 8;
 
 					c.Emit(OpCodes.Pop);
-					c.Emit(OpCodes.Ldloc, 4);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.Emit(OpCodes.Ldarg, 4);
 					c.EmitDelegate<Func<int, float, float>>((count, procCoeff) =>
 					{

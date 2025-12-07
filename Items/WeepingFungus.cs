@@ -172,7 +172,7 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (NetworkServer.active)
 			{
-				body.AddItemBehavior<WungusBehavior>(body.inventory.GetItemCount(DLC1Content.Items.MushroomVoid));
+				body.AddItemBehavior<WungusBehavior>(body.inventory.GetItemCountEffective(DLC1Content.Items.MushroomVoid));
 			}
 		}
 	}

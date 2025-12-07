@@ -349,7 +349,7 @@ namespace TPDespair.ZetItemTweaks
 			Inventory inventory = self.inventory;
 			if (inventory)
 			{
-				int count = inventory.GetItemCount(DLC1Content.Items.ImmuneToDebuff);
+				int count = inventory.GetItemCountEffective(DLC1Content.Items.ImmuneToDebuff);
 
 				ImmunityTracker immunityTracker = self.GetComponent<ImmunityTracker>();
 				if (!immunityTracker && count > 0)
@@ -399,7 +399,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void HandleCleanseHook()
 		{
-			On.RoR2.Util.CleanseBody += (orig, body, debuff, buff, cooldown, dot, stun, proj) =>
+			On.RoR2.CleanseSystem.CleanseBodyServer_CharacterBody_bool_bool_bool_bool_bool_bool += (orig, body, debuff, buff, cooldown, dot, stun, proj) =>
 			{
 				if (body && cooldown)
 				{

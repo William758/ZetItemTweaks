@@ -261,28 +261,31 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
+				int ItemCountLocIndex = -1;
+
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(4)
+					x => x.MatchCallOrCallvirt(typeof(DefenseMatrixOn), "GetItemStack"),
+					x => x.MatchStloc(out ItemCountLocIndex)
 				);
 
 				if (found)
 				{
-					c.Index += 1;
+					c.Index += 2;
 
-					c.Emit(OpCodes.Ldloc, 4);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.EmitDelegate<Func<int, float>>((count) =>
 					{
 						float range = BaseRange.Value + StackRange.Value * (count - 1);
 						return range * range;
 					});
-					c.Emit(OpCodes.Stloc, 2);
+					c.Emit(OpCodes.Stloc, 2);// radius
 
-					c.Emit(OpCodes.Ldloc, 4);
+					c.Emit(OpCodes.Ldloc, ItemCountLocIndex);
 					c.EmitDelegate<Func<int, int>>((count) =>
 					{
 						return BaseTarget.Value + StackTarget.Value * (count - 1);
 					});
-					c.Emit(OpCodes.Stloc, 4);
+					c.Emit(OpCodes.Stloc, ItemCountLocIndex);//used as target count
 				}
 				else
 				{

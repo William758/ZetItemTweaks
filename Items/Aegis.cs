@@ -137,7 +137,7 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (NetworkServer.active)
 			{
-				body.AddItemBehavior<BarrierArmorBehavior>(body.inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal));
+				body.AddItemBehavior<BarrierArmorBehavior>(body.inventory.GetItemCountEffective(RoR2Content.Items.BarrierOnOverHeal));
 			}
 		}
 

@@ -176,7 +176,7 @@ To use the changes from this mod, disable the changes made in the other mod and 
 ### Razor Wire
 
 ```
-- Razors deal between 120% and 180% damage based on how long you haven't been hit.
+- Razors deal between 120% and 240% damage based on how long you haven't been hit.
 - Range of 25m (+5m per stack). (from 25m (+10m per stack))
 ```
 
@@ -348,6 +348,12 @@ Use r2modman or place inside of Risk of Rain 2/Bepinex/Plugins/
 Brazilian Portuguese translation by SpookyGabe#9476.
 
 ## Changelog:
+
+**1.4.0**
+
+```
+Updated for AC.
+```
 
 **1.3.2**
 

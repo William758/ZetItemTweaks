@@ -137,7 +137,7 @@ namespace TPDespair.ZetItemTweaks
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(DLC1Content.Items).GetField("ChainLightningVoid")),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective"),
 					x => x.MatchStloc(out ItemCountLocIndex)
 				);
 

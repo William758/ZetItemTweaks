@@ -205,7 +205,7 @@ namespace TPDespair.ZetItemTweaks
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(RoR2Content.Items), "WarCryOnMultiKill"),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective"),
 					x => x.MatchStloc(out index)
 				);
 
@@ -241,7 +241,7 @@ namespace TPDespair.ZetItemTweaks
 								Inventory inventory = body.inventory;
 								if (inventory)
 								{
-									int count = inventory.GetItemCount(RoR2Content.Items.WarCryOnMultiKill);
+									int count = inventory.GetItemCountEffective(RoR2Content.Items.WarCryOnMultiKill);
 									if (count > 0)
 									{
 										float duration = BaseBuffDuration.Value + StackBuffDuration.Value * (count - 1);

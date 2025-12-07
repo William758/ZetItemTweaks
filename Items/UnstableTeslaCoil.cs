@@ -237,7 +237,7 @@ namespace TPDespair.ZetItemTweaks
 					c.Emit(OpCodes.Ldfld, typeof(RoR2.Items.BaseItemBodyBehavior).GetField("stack"));
 					c.EmitDelegate<Func<int, int>>((count) =>
 					{
-						return 1 - (BaseTarget.Value + StackTarget.Value * (count - 1));
+						return (BaseTarget.Value + StackTarget.Value * (count - 1) - 1);
 					});
 				}
 				else

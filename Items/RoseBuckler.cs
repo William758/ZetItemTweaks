@@ -269,7 +269,7 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (NetworkServer.active)
 			{
-				body.AddItemBehavior<SprintArmorBehavior>(body.inventory.GetItemCount(RoR2Content.Items.SprintArmor));
+				body.AddItemBehavior<SprintArmorBehavior>(body.inventory.GetItemCountEffective(RoR2Content.Items.SprintArmor));
 			}
 		}
 

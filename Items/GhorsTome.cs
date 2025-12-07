@@ -17,6 +17,8 @@ namespace TPDespair.ZetItemTweaks
 		public static string itemIdentifier = "GhorsTome";
 		public static bool appliedChanges = false;
 
+		public static bool chunkChanceSuccess = false;
+
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
 		public static ConfigEntry<float> BaseChance { get; set; }
@@ -111,14 +113,24 @@ namespace TPDespair.ZetItemTweaks
 					ScalingText(BaseMult.Value, StackMult.Value, "percent", "cIsUtility")
 				);
 			}
-			if (BaseChance.Value > 0f)
+			if (BaseChance.Value > 0f || !chunkChanceSuccess)
 			{
 				if (output != "") output += "\n";
 
-				output += String.Format(
-					TextFragment("TREASURE"),
-					ScalingText(BaseChance.Value, StackChance.Value, "chance", "cIsUtility")
-				);
+				if (chunkChanceSuccess)
+				{
+					output += String.Format(
+						TextFragment("TREASURE"),
+						ScalingText(BaseChance.Value, StackChance.Value, "chance", "cIsUtility")
+					);
+				}
+				else
+				{
+					output += String.Format(
+						TextFragment("TREASURE"),
+						ScalingText(4f, 4f, "chance", "cIsUtility")
+					);
+				}
 			}
 
 			if (output == "") output += TextFragment("CFG_NO_EFFECT");
@@ -156,7 +168,7 @@ namespace TPDespair.ZetItemTweaks
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("BonusGoldPackOnKill")),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective"),
 					x => x.MatchStloc(out ItemCountIndex)
 				);
 
@@ -184,6 +196,8 @@ namespace TPDespair.ZetItemTweaks
 
 							return 0f;
 						});
+
+						chunkChanceSuccess = true;
 					}
 					else
 					{
@@ -220,7 +234,7 @@ namespace TPDespair.ZetItemTweaks
 							Inventory inventory = attackBody.inventory;
 							if (inventory)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.BonusGoldPackOnKill);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.BonusGoldPackOnKill);
 								if (count > 0)
 								{
 									float mult = 1f + BaseMult.Value + StackMult.Value * (count - 1);

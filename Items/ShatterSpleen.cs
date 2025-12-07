@@ -1,23 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Networking;
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
-
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.Networking;
 using static TPDespair.ZetItemTweaks.ZetItemTweaksPlugin;
 
 namespace TPDespair.ZetItemTweaks
 {
 	public static class ShatterSpleen
 	{
+		private static MethodInfo OnKillProcDamageMethod;
+
 		public static List<string> autoCompatList = new List<string> { "com.RiskyLives.RiskyMod", "Hayaku.VanillaRebalance", "com.NetherCrowCSOLYOO.ClassicCritAdd" };
 
 		public static string itemIdentifier = "ShatterSpleen";
 		public static bool appliedChanges = false;
 		public static bool appliedBleedSeparation = false;
+		public static bool modifiedBleedExplode = false;
+
+		private static int MatchedCursorIndex = 0;
 
 		public static ConfigEntry<int> EnableChanges { get; set; }
 		public static ConfigEntry<bool> OverrideText { get; set; }
@@ -96,6 +101,12 @@ namespace TPDespair.ZetItemTweaks
 		{
 			if (!ProceedChanges(itemIdentifier, EnableChanges.Value, autoCompatList)) return;
 
+			OnKillProcDamageMethod = typeof(Util).GetMethod("OnKillProcDamage", BindingFlags.Static | BindingFlags.Public, null, new Type[]{ typeof(float), typeof(float) }, null);
+			if (OnKillProcDamageMethod == null)
+			{
+				LogError(itemIdentifier + " :: Failed to find OnKillProcDamageMethod!");
+			}
+
 			if (SeparateBleed.Value)
 			{
 				BleedSeparationHook();
@@ -104,7 +115,10 @@ namespace TPDespair.ZetItemTweaks
 				appliedBleedSeparation = true;
 			}
 
-			BleedExplodeHook();
+			if (MatchedCursorIndex != 0 && OnKillProcDamageMethod != null)
+			{
+				BleedExplodeHook();
+			}
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
@@ -161,37 +175,48 @@ namespace TPDespair.ZetItemTweaks
 				);
 			}
 
-			if (BaseExplodeAtkDamage.Value > 0f)
+			if (modifiedBleedExplode)
 			{
-				if (BaseExplodeVicHealth.Value > 0f)
+				if (BaseExplodeAtkDamage.Value > 0f)
 				{
-					output += String.Format(
-						TextFragment("BLEED_EXPLODE_BOTH"),
-						ScalingText(BaseExplodeAtkDamage.Value, StackExplodeAtkDamage.Value, "percent", "cIsDamage"),
-						ScalingText(BaseExplodeVicHealth.Value, StackExplodeVicHealth.Value, "percent", "cIsDamage")
-					);
+					if (BaseExplodeVicHealth.Value > 0f)
+					{
+						output += String.Format(
+							TextFragment("BLEED_EXPLODE_BOTH"),
+							ScalingText(BaseExplodeAtkDamage.Value, StackExplodeAtkDamage.Value, "percent", "cIsDamage"),
+							ScalingText(BaseExplodeVicHealth.Value, StackExplodeVicHealth.Value, "percent", "cIsDamage")
+						);
+					}
+					else
+					{
+						output += String.Format(
+							TextFragment("BLEED_EXPLODE_BASE"),
+							ScalingText(BaseExplodeAtkDamage.Value, StackExplodeAtkDamage.Value, "percent", "cIsDamage")
+						);
+					}
 				}
 				else
 				{
-					output += String.Format(
-						TextFragment("BLEED_EXPLODE_BASE"),
-						ScalingText(BaseExplodeAtkDamage.Value, StackExplodeAtkDamage.Value, "percent", "cIsDamage")
-					);
+					if (BaseExplodeVicHealth.Value > 0f)
+					{
+						output += String.Format(
+							TextFragment("BLEED_EXPLODE_HEALTH"),
+							ScalingText(BaseExplodeVicHealth.Value, StackExplodeVicHealth.Value, "percent", "cIsDamage")
+						);
+					}
+					else
+					{
+						output += TextFragment("CFG_NO_EXPLODE_EFFECT");
+					}
 				}
 			}
 			else
 			{
-				if (BaseExplodeVicHealth.Value > 0f)
-				{
-					output += String.Format(
-						TextFragment("BLEED_EXPLODE_HEALTH"),
-						ScalingText(BaseExplodeVicHealth.Value, StackExplodeVicHealth.Value, "percent", "cIsDamage")
-					);
-				}
-				else
-				{
-					output += TextFragment("CFG_NO_EXPLODE_EFFECT");
-				}
+				output += String.Format(
+					TextFragment("BLEED_EXPLODE_BOTH"),
+					ScalingText(0.4f, 0.4f, "percent", "cIsDamage"),
+					ScalingText(0.15f, 0f, "percent", "cIsDamage")
+				);
 			}
 
 			return output;
@@ -206,17 +231,18 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchLdloc(out _),
 					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("BleedOnHitAndExplode")),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount")
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective")
 				);
 
 				if (found)
 				{
-					c.Index += 3;
+					c.Index += 2;
 
 					c.Emit(OpCodes.Pop);
 					c.Emit(OpCodes.Ldc_I4, 0);
+
+					MatchedCursorIndex = c.Index;
 				}
 				else
 				{
@@ -255,11 +281,11 @@ namespace TPDespair.ZetItemTweaks
 			Inventory inventory = attacker.inventory;
 			if (inventory)
 			{
-				int count = inventory.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode);
+				int count = inventory.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode);
 				if (count > 0)
 				{
 					float damageCoefficient = (BaseDotDamage.Value + StackDotDamage.Value * (count - 1)) / 2.4f;
-					DotController.InflictDot(victim.gameObject, attacker.gameObject, DotController.DotIndex.Bleed, 3f * damageInfo.procCoefficient, damageCoefficient);
+					DotController.InflictDot(victim.gameObject, attacker.gameObject, null, DotController.DotIndex.Bleed, 3f * damageInfo.procCoefficient, damageCoefficient);
 				}
 			}
 		}
@@ -270,27 +296,46 @@ namespace TPDespair.ZetItemTweaks
 			{
 				ILCursor c = new ILCursor(il);
 
+				c.Index = MatchedCursorIndex;
+
 				bool found = c.TryGotoNext(
-					x => x.MatchStloc(98)
+					x => x.MatchCallOrCallvirt(OnKillProcDamageMethod)
+				);
+
+				if (!found)
+				{
+					LogWarn(itemIdentifier + " :: BleedExplodeHook MoveTo OnKillProcDamage Failed!");
+					return;
+				}
+
+
+
+				int DamageCoeffLocIndex = -1;
+
+				found = c.TryGotoNext(
+					x => x.MatchStloc(out DamageCoeffLocIndex)
 				);
 
 				if (found)
 				{
 					c.Index += 1;
 
-					c.Emit(OpCodes.Ldloc, 55);
-					c.Emit(OpCodes.Ldloc, 15);
-					c.Emit(OpCodes.Ldloc, 2);
-					c.EmitDelegate<Func<int, CharacterBody, CharacterBody, float>>((count, attacker, victim) =>
+					c.Emit(OpCodes.Ldarg, 1);
+					c.EmitDelegate<Func<DamageReport, float>>((damageReport) =>
 					{
 						float damage = 0f;
 
-						damage += attacker.damage * (BaseExplodeAtkDamage.Value + StackExplodeAtkDamage.Value * (count - 1));
-						damage += victim.maxHealth * (BaseExplodeVicHealth.Value + StackExplodeVicHealth.Value * (count - 1));
+						Inventory inventory = damageReport.attackerMaster.inventory;
+						int count = inventory.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode);
+
+						damage += damageReport.attackerBody.damage * (BaseExplodeAtkDamage.Value + StackExplodeAtkDamage.Value * (count - 1));
+						damage += damageReport.victimBody.maxHealth * (BaseExplodeVicHealth.Value + StackExplodeVicHealth.Value * (count - 1));
 
 						return damage;
 					});
-					c.Emit(OpCodes.Stloc, 98);
+					c.Emit(OpCodes.Stloc, DamageCoeffLocIndex);
+
+					modifiedBleedExplode = true;
 				}
 				else
 				{

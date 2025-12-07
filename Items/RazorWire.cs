@@ -65,7 +65,7 @@ namespace TPDespair.ZetItemTweaks
 				"Minimum damage dealt by razors per stack."
 			);
 			MaxBaseDamage = ConfigEntry(
-				itemIdentifier, "MaxBaseDamage", 1.8f,
+				itemIdentifier, "MaxBaseDamage", 2.4f,
 				"Maximum damage dealt by razors."
 			);
 			MaxStackDamage = ConfigEntry(
@@ -79,7 +79,7 @@ namespace TPDespair.ZetItemTweaks
 				"Delay after being hit to start increasing damage."
 			);
 			MaxDuration = ConfigEntry(
-				itemIdentifier, "MaxDuration", 1.5f,
+				itemIdentifier, "MaxDuration", 2.0f,
 				"Delay after being hit to reach maximum damage."
 			);
 			MaxDuration.Value = Mathf.Max(MinDuration.Value, Mathf.Abs(MaxDuration.Value));
@@ -205,7 +205,7 @@ namespace TPDespair.ZetItemTweaks
 				}
 
 				found = c.TryGotoNext(
-					x => x.MatchLdcI4(6),
+					x => x.MatchLdcI4((int)LightningOrb.LightningType.RazorWire),
 					x => x.MatchStfld(typeof(LightningOrb).GetField("lightningType"))
 				);
 

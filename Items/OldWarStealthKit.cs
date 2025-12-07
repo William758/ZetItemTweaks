@@ -253,7 +253,7 @@ namespace TPDespair.ZetItemTweaks
 								Inventory inventory = body.inventory;
 								if (inventory)
 								{
-									count = inventory.GetItemCount(RoR2Content.Items.Phasing);
+									count = inventory.GetItemCountEffective(RoR2Content.Items.Phasing);
 								}
 
 								count = Mathf.Max(count, 1);

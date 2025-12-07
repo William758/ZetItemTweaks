@@ -166,7 +166,7 @@ namespace TPDespair.ZetItemTweaks
 
 		private static void DurationHook()
 		{
-			IL.RoR2.EquipmentSlot.OnEquipmentExecuted += (il) =>
+			IL.RoR2.EquipmentSlot.OnEquipmentExecuted_byte_byte_EquipmentIndex += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 
@@ -174,7 +174,7 @@ namespace TPDespair.ZetItemTweaks
 
 				bool found = c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(RoR2Content.Items), "EnergizedOnEquipmentUse"),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective"),
 					x => x.MatchStloc(out index)
 				);
 

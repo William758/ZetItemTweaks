@@ -48,6 +48,11 @@ namespace TPDespair.ZetItemTweaks
 				reactorInvuln = BuffCatalog.FindBuffIndex("BuffReactor");
 			}
 
+			if (PluginLoaded("com.TeamMoonstorm"))
+			{
+				reactorInvuln = BuffCatalog.FindBuffIndex("BuffReactor");
+			}
+
 			if (PluginLoaded("com.themysticsword.risingtides"))
 			{
 				waterInvuln = BuffCatalog.FindBuffIndex("RisingTides_WaterInvincibility");
@@ -124,34 +129,51 @@ namespace TPDespair.ZetItemTweaks
 					c.EmitDelegate<Func<float, HealthComponent, DamageInfo, float>>((damage, healthComponent, damageInfo) =>
 					{
 						CharacterBody vicBody = healthComponent.body;
-						if (vicBody)
+						if (!vicBody) return damage;
+
+						GameObject attacker = damageInfo.attacker;
+						if (attacker)
 						{
-							if (DeathMark.appliedChanges && vicBody.HasBuff(RoR2Content.Buffs.DeathMark))
+							CharacterBody atkBody = attacker.GetComponent<CharacterBody>();
+							if (atkBody)
 							{
-								GameObject attacker = damageInfo.attacker;
-								if (attacker != null)
+								if (DeathMark.appliedChanges && vicBody.HasBuff(RoR2Content.Buffs.DeathMark))
 								{
-									CharacterBody attackBody = attacker.GetComponent<CharacterBody>();
-									if (attackBody != null)
+									int count = 0;
+
+									if (DeathMark.PlayerTeamStack.Value && atkBody.teamComponent.teamIndex == TeamIndex.Player)
 									{
-										int count = 0;
+										count = Util.GetItemCountForTeam(TeamIndex.Player, RoR2Content.Items.DeathMark.itemIndex, true, true);
+									}
+									else
+									{
+										Inventory inventory = atkBody.inventory;
+										if (inventory) count = inventory.GetItemCountEffective(RoR2Content.Items.DeathMark);
+									}
 
-										if (DeathMark.PlayerTeamStack.Value && attackBody.teamComponent.teamIndex == TeamIndex.Player)
+									count = Math.Max(1, count);
+
+									float target = 1f + DeathMark.BaseDamage.Value + DeathMark.StackDamage.Value * (count - 1);
+
+									// undo effect of default deathmark
+									damage *= target / 1.5f;
+								}
+
+								if (ShatteringJustice.appliedChanges && vicBody.HasBuff(RoR2Content.Buffs.Pulverized))
+								{
+									Inventory inventory = atkBody.inventory;
+									if (inventory)
+									{
+										int count = inventory.GetItemCountEffective(RoR2Content.Items.ArmorReductionOnHit);
+										if (count > 0)
 										{
-											count = Util.GetItemCountForTeam(TeamIndex.Player, RoR2Content.Items.DeathMark.itemIndex, true, true);
+											float effect = 1f - Mathf.InverseLerp(ShatteringJustice.FullEffectThreshold.Value, 0.9f, healthComponent.combinedHealthFraction);
+											//logger.LogMessage("Fraction : " + $"{(healthComponent.combinedHealthFraction * 100f):0.#}% - Effect : " + $"{effect:0.###}");
+
+											float target = 1f + (ShatteringJustice.BaseDamage.Value + ShatteringJustice.StackDamage.Value * (count - 1)) * effect;
+
+											damage *= target;
 										}
-										else
-										{
-											Inventory inventory = attackBody.inventory;
-											if (inventory) count = inventory.GetItemCount(RoR2Content.Items.DeathMark);
-										}
-
-										count = Math.Max(1, count);
-
-										float target = 1f + DeathMark.BaseDamage.Value + DeathMark.StackDamage.Value * (count - 1);
-
-										// undo effect of default deathmark
-										damage *= target / 1.5f;
 									}
 								}
 							}
@@ -221,7 +243,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (RoseBuckler.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.SprintArmor);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.SprintArmor);
 								if (count > 0)
 								{
 									if (RoseBuckler.MaxMomentum.Value > 0 && self.HasBuff(RoseBuckler.MomentumBuff) && RoseBuckler.BaseMomentumMove.Value > 0f)
@@ -239,7 +261,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (Pearl.appliedChanges && Pearl.BaseMove.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 								if (count > 0)
 								{
 									value += Pearl.BaseMove.Value + (Pearl.StackMove.Value * (count - 1));
@@ -248,7 +270,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseMove.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 								if (count > 0)
 								{
 									value += IrradiantPearl.BaseMove.Value + (IrradiantPearl.StackMove.Value * (count - 1));
@@ -259,7 +281,7 @@ namespace TPDespair.ZetItemTweaks
 							{
 								if (self.HasBuff(RoR2Content.Buffs.Energized))
 								{
-									int count = inventory.GetItemCount(RoR2Content.Items.EnergizedOnEquipmentUse);
+									int count = inventory.GetItemCountEffective(RoR2Content.Items.EnergizedOnEquipmentUse);
 									count = Mathf.Max(1, count);
 
 									value += WarHorn.BaseBuffMove.Value + (WarHorn.StackBuffMove.Value * (count - 1));
@@ -268,7 +290,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (HuntersHarpoon.appliedChanges)
 							{
-								int count = inventory.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
+								int count = inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
 								if (count > 0)
 								{
 									float mult = self.GetBuffCount(DLC1Content.Buffs.KillMoveSpeed) / 5f;
@@ -282,7 +304,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (RedWhip.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.SprintOutOfCombat);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.SprintOutOfCombat);
 								if (count > 0)
 								{
 									if (self.HasBuff(RoR2Content.Buffs.WhipBoost))
@@ -367,7 +389,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (Pearl.appliedChanges && Pearl.BaseDamage.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 								if (count > 0)
 								{
 									value += Pearl.BaseDamage.Value + (Pearl.StackDamage.Value * (count - 1));
@@ -376,7 +398,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseDamage.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 								if (count > 0)
 								{
 									value += IrradiantPearl.BaseDamage.Value + (IrradiantPearl.StackDamage.Value * (count - 1));
@@ -450,7 +472,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (PlasmaShrimp.appliedChanges)
 							{
-								int count = inventory.GetItemCount(DLC1Content.Items.MissileVoid);
+								int count = inventory.GetItemCountEffective(DLC1Content.Items.MissileVoid);
 								if (count > 0)
 								{
 									float targetValue = PlasmaShrimp.BaseHealthAsShield.Value + (PlasmaShrimp.StackHealthAsShield.Value * (count - 1));
@@ -461,7 +483,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (PersonalShieldGenerator.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.PersonalShield);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.PersonalShield);
 								if (count > 0)
 								{
 									float defaultValue = 0.08f * count;
@@ -534,7 +556,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (TitanicKnurl.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Knurl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Knurl);
 								if (count > 0)
 								{
 									float defaultValue = 40f * count;
@@ -546,7 +568,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (BensRainCoat.appliedChanges && BensRainCoat.BaseHealth.Value > 0f)
 							{
-								int count = inventory.GetItemCount(DLC1Content.Items.ImmuneToDebuff);
+								int count = inventory.GetItemCountEffective(DLC1Content.Items.ImmuneToDebuff);
 								if (count > 0)
 								{
 									value += BensRainCoat.BaseHealth.Value + (BensRainCoat.StackHealth.Value * (count - 1));
@@ -555,7 +577,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (BisonSteak.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.FlatHealth);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.FlatHealth);
 								if (count > 0)
 								{
 									float defaultValue = 25f * count;
@@ -580,7 +602,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (TitanicKnurl.appliedChanges && TitanicKnurl.BaseHealthPercent.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Knurl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Knurl);
 								if (count > 0)
 								{
 									value += TitanicKnurl.BaseHealthPercent.Value + (TitanicKnurl.StackHealthPercent.Value * (count - 1));
@@ -589,7 +611,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (BensRainCoat.appliedChanges && BensRainCoat.BaseHealthPercent.Value > 0f)
 							{
-								int count = inventory.GetItemCount(DLC1Content.Items.ImmuneToDebuff);
+								int count = inventory.GetItemCountEffective(DLC1Content.Items.ImmuneToDebuff);
 								if (count > 0)
 								{
 									value += BensRainCoat.BaseHealthPercent.Value + (BensRainCoat.StackHealthPercent.Value * (count - 1));
@@ -598,7 +620,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (Pearl.appliedChanges && Pearl.BaseHealth.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 								if (count > 0)
 								{
 									value += Pearl.BaseHealth.Value + (Pearl.StackHealth.Value * (count - 1));
@@ -607,7 +629,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseHealth.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 								if (count > 0)
 								{
 									value += IrradiantPearl.BaseHealth.Value + (IrradiantPearl.StackHealth.Value * (count - 1));
@@ -682,7 +704,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (Pearl.appliedChanges && Pearl.BaseAtkSpd.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 								if (count > 0)
 								{
 									value += Pearl.BaseAtkSpd.Value + (Pearl.StackAtkSpd.Value * (count - 1));
@@ -691,7 +713,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseAtkSpd.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 								if (count > 0)
 								{
 									value += IrradiantPearl.BaseAtkSpd.Value + (IrradiantPearl.StackAtkSpd.Value * (count - 1));
@@ -702,7 +724,7 @@ namespace TPDespair.ZetItemTweaks
 							{
 								if (self.HasBuff(RoR2Content.Buffs.Energized))
 								{
-									int count = inventory.GetItemCount(RoR2Content.Items.EnergizedOnEquipmentUse);
+									int count = inventory.GetItemCountEffective(RoR2Content.Items.EnergizedOnEquipmentUse);
 									count = Mathf.Max(1, count);
 
 									float targetValue = WarHorn.BaseBuffAtkSpd.Value + (WarHorn.StackBuffAtkSpd.Value * (count - 1));
@@ -796,7 +818,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (!c.TryGotoNext(
 					x => x.MatchLdsfld(typeof(RoR2Content.Items).GetField("Knurl")),
-					x => x.MatchCallOrCallvirt<Inventory>("GetItemCount"),
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective"),
 					x => x.MatchStloc(out KnurlCountLocIndex)
 				))
 				{
@@ -883,7 +905,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (TitanicKnurl.appliedChanges)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Knurl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Knurl);
 								if (count > 0)
 								{
 									float defaultValue = 1.6f * count;
@@ -898,7 +920,7 @@ namespace TPDespair.ZetItemTweaks
 								int BuffCount = self.GetBuffCount(JunkContent.Buffs.MeatRegenBoost);
 								if (BuffCount > 0)
 								{
-									int itemCount = Mathf.Max(1, inventory.GetItemCount(RoR2Content.Items.FlatHealth));
+									int itemCount = Mathf.Max(1, inventory.GetItemCountEffective(RoR2Content.Items.FlatHealth));
 
 									float targetValue = (BisonSteak.BaseKillRegen.Value + (BisonSteak.StackKillRegen.Value * (itemCount - 1))) * BuffCount;
 
@@ -908,7 +930,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (Pearl.appliedChanges && Pearl.BaseRegen.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 								if (count > 0)
 								{
 									amount += Pearl.BaseRegen.Value + (Pearl.StackRegen.Value * (count - 1));
@@ -917,7 +939,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseRegen.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 								if (count > 0)
 								{
 									amount += IrradiantPearl.BaseRegen.Value + (IrradiantPearl.StackRegen.Value * (count - 1));
@@ -926,7 +948,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (CautiousSlug.appliedChanges && self.outOfDanger)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.HealWhileSafe);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.HealWhileSafe);
 								if (count > 0)
 								{
 									float defaultValue = 3f * count;
@@ -967,7 +989,7 @@ namespace TPDespair.ZetItemTweaks
 						{
 							if (TitanicKnurl.appliedChanges && TitanicKnurl.BaseRegenFraction.Value > 0f)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.Knurl);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.Knurl);
 								if (count > 0)
 								{
 									amount += TitanicKnurl.BaseRegenFraction.Value + (TitanicKnurl.StackRegenFraction.Value * (count - 1));
@@ -976,7 +998,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (BensRainCoat.appliedChanges && BensRainCoat.BaseSafeRegenFraction.Value > 0f && self.outOfDanger)
 							{
-								int count = inventory.GetItemCount(DLC1Content.Items.ImmuneToDebuff);
+								int count = inventory.GetItemCountEffective(DLC1Content.Items.ImmuneToDebuff);
 								if (count > 0)
 								{
 									amount += BensRainCoat.BaseSafeRegenFraction.Value + (BensRainCoat.StackSafeRegenFraction.Value * (count - 1));
@@ -985,7 +1007,7 @@ namespace TPDespair.ZetItemTweaks
 
 							if (CautiousSlug.appliedChanges && CautiousSlug.BaseSafeRegenFraction.Value > 0f && self.outOfDanger)
 							{
-								int count = inventory.GetItemCount(RoR2Content.Items.HealWhileSafe);
+								int count = inventory.GetItemCountEffective(RoR2Content.Items.HealWhileSafe);
 								if (count > 0)
 								{
 									amount += CautiousSlug.BaseSafeRegenFraction.Value + (CautiousSlug.StackSafeRegenFraction.Value * (count - 1));
@@ -1087,7 +1109,7 @@ namespace TPDespair.ZetItemTweaks
 					Inventory inventory = self.inventory;
 					if (inventory)
 					{
-						if (inventory.GetItemCount(DLC1Content.Items.ConvertCritChanceToCritDamage) != 0)
+						if (inventory.GetItemCountEffective(DLC1Content.Items.ConvertCritChanceToCritDamage) != 0)
 						{
 							critMult += crit * 0.01f;
 							crit = 0f;
@@ -1146,7 +1168,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (Aegis.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.BarrierOnOverHeal);
 					if (count > 0)
 					{
 						if (Aegis.BaseArmor.Value > 0f)
@@ -1166,7 +1188,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (TitanicKnurl.appliedChanges && TitanicKnurl.BaseArmor.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.Knurl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.Knurl);
 					if (count > 0)
 					{
 						armor += TitanicKnurl.BaseArmor.Value + (TitanicKnurl.StackArmor.Value * (count - 1));
@@ -1175,7 +1197,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (RoseBuckler.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.SprintArmor);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.SprintArmor);
 					if (count > 0)
 					{
 						if (self.isSprinting)
@@ -1198,7 +1220,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (Pearl.appliedChanges && Pearl.BaseArmor.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 					if (count > 0)
 					{
 						armor += Pearl.BaseArmor.Value + (Pearl.StackArmor.Value * (count - 1));
@@ -1207,7 +1229,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseArmor.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 					if (count > 0)
 					{
 						armor += IrradiantPearl.BaseArmor.Value + (IrradiantPearl.StackArmor.Value * (count - 1));
@@ -1216,7 +1238,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (RedWhip.appliedChanges && RedWhip.BaseArmor.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.SprintOutOfCombat);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.SprintOutOfCombat);
 					if (count > 0)
 					{
 						armor += RedWhip.BaseArmor.Value + (RedWhip.StackArmor.Value * (count - 1));
@@ -1236,7 +1258,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (ShatterSpleen.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode);
 					if (count > 0)
 					{
 						float targetValue = ShatterSpleen.BaseCrit.Value + (ShatterSpleen.StackCrit.Value * (count - 1));
@@ -1247,7 +1269,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (LaserScope.appliedChanges && LaserScope.BaseCrit.Value != 0f)
 				{
-					int count = inventory.GetItemCount(DLC1Content.Items.CritDamage);
+					int count = inventory.GetItemCountEffective(DLC1Content.Items.CritDamage);
 					if (count > 0)
 					{
 						crit += LaserScope.BaseCrit.Value + (LaserScope.StackCrit.Value * (count - 1));
@@ -1256,7 +1278,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (PredatoryInstincts.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.AttackSpeedOnCrit);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.AttackSpeedOnCrit);
 					if (count > 0)
 					{
 						float targetValue = PredatoryInstincts.BaseCrit.Value + (PredatoryInstincts.StackCrit.Value * (count - 1));
@@ -1267,7 +1289,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (HarvestersScythe.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.HealOnCrit);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.HealOnCrit);
 					if (count > 0)
 					{
 						float targetValue = HarvestersScythe.BaseCrit.Value + (HarvestersScythe.StackCrit.Value * (count - 1));
@@ -1278,7 +1300,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (LensMakersGlasses.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.CritGlasses);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.CritGlasses);
 					if (count > 0)
 					{
 						float defaultValue = 10f * count;
@@ -1290,7 +1312,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (Pearl.appliedChanges && Pearl.BaseCrit.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 					if (count > 0)
 					{
 						crit += Pearl.BaseCrit.Value + (Pearl.StackCrit.Value * (count - 1));
@@ -1299,7 +1321,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseCrit.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 					if (count > 0)
 					{
 						crit += IrradiantPearl.BaseCrit.Value + (IrradiantPearl.StackCrit.Value * (count - 1));
@@ -1319,7 +1341,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (LaserScope.appliedChanges)
 				{
-					int count = inventory.GetItemCount(DLC1Content.Items.CritDamage);
+					int count = inventory.GetItemCountEffective(DLC1Content.Items.CritDamage);
 					if (count > 0)
 					{
 						float defaultValue = 1f * count;
@@ -1342,7 +1364,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (AlienHead.appliedChanges && AlienHead.BaseFlatCooldown.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.AlienHead);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.AlienHead);
 					if (count > 0)
 					{
 						cooldown += AlienHead.BaseFlatCooldown.Value + (AlienHead.StackFlatCooldown.Value * (count - 1));
@@ -1363,7 +1385,7 @@ namespace TPDespair.ZetItemTweaks
 			{
 				if (Pearl.appliedChanges && Pearl.BaseCooldown.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.Pearl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.Pearl);
 					if (count > 0)
 					{
 						additiveReduction += Pearl.BaseCooldown.Value + (Pearl.StackCooldown.Value * (count - 1));
@@ -1372,7 +1394,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (IrradiantPearl.appliedChanges && IrradiantPearl.BaseCooldown.Value > 0f)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.ShinyPearl);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
 					if (count > 0)
 					{
 						additiveReduction += IrradiantPearl.BaseCooldown.Value + (IrradiantPearl.StackCooldown.Value * (count - 1));
@@ -1381,7 +1403,7 @@ namespace TPDespair.ZetItemTweaks
 
 				if (AlienHead.appliedChanges)
 				{
-					int count = inventory.GetItemCount(RoR2Content.Items.AlienHead);
+					int count = inventory.GetItemCountEffective(RoR2Content.Items.AlienHead);
 					if (count > 0)
 					{
 						float defaultValue = Mathf.Pow(0.75f, count);

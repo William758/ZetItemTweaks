@@ -82,7 +82,6 @@ namespace TPDespair.ZetItemTweaks
 			PulverizedEffectPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/PulverizedEffect");
 
 			PulverizeApplicationHook();
-			PulverizeDamageHook();
 
 			if (!GenerateOverrideText.Value || OverrideText.Value)
 			{
@@ -129,14 +128,13 @@ namespace TPDespair.ZetItemTweaks
 				ILCursor c = new ILCursor(il);
 
 				bool found = c.TryGotoNext(
-					x => x.MatchCallvirt<CharacterMaster>("get_inventory"),
 					x => x.MatchLdsfld("RoR2.RoR2Content/Items", "ArmorReductionOnHit"),
-					x => x.MatchCallvirt<Inventory>("GetItemCount")
+					x => x.MatchCallOrCallvirt<Inventory>("GetItemCountEffective")
 				);
 
 				if (found)
 				{
-					c.Index += 3;
+					c.Index += 2;
 
 					c.Emit(OpCodes.Ldarg, 0);
 					c.EmitDelegate<Action<int, HealthComponent>>((count, self) =>
@@ -164,66 +162,6 @@ namespace TPDespair.ZetItemTweaks
 				else
 				{
 					LogWarn(itemIdentifier + " :: PulverizeApplicationHook Failed!");
-				}
-			};
-		}
-
-		private static void PulverizeDamageHook()
-		{
-			IL.RoR2.HealthComponent.TakeDamageProcess += (il) =>
-			{
-				ILCursor c = new ILCursor(il);
-
-				int DamageIndex = -1;
-
-				bool found = c.TryGotoNext(
-					x => x.MatchLdfld<DamageInfo>("damage"),
-					x => x.MatchStloc(out DamageIndex)
-				);
-
-				if (found)
-				{
-					c.Index += 2;
-
-					c.Emit(OpCodes.Ldloc, DamageIndex);
-					c.Emit(OpCodes.Ldarg, 0);
-					c.Emit(OpCodes.Ldarg, 1);
-					c.EmitDelegate<Func<float, HealthComponent, DamageInfo, float>>((damage, healthComponent, damageInfo) =>
-					{
-						GameObject attacker = damageInfo.attacker;
-						if (!attacker) return damage;
-
-						CharacterBody attackBody = attacker.GetComponent<CharacterBody>();
-						if (!attackBody) return damage;
-
-						CharacterBody self = healthComponent.body;
-						if (!self) return damage;
-
-						if (self.HasBuff(RoR2Content.Buffs.Pulverized))
-						{
-							Inventory inventory = attackBody.inventory;
-							if (inventory)
-							{
-								int count = inventory.GetItemCount(RoR2Content.Items.ArmorReductionOnHit);
-								if (count > 0)
-								{
-									float effect = 1f - Mathf.InverseLerp(FullEffectThreshold.Value, 0.9f, healthComponent.combinedHealthFraction);
-									//logger.LogMessage("Fraction : " + $"{(healthComponent.combinedHealthFraction * 100f):0.#}% - Effect : " + $"{effect:0.###}");
-
-									float target = 1f + (BaseDamage.Value + StackDamage.Value * (count - 1)) * effect;
-
-									damage *= target;
-								}
-							}
-						}
-
-						return damage;
-					});
-					c.Emit(OpCodes.Stloc, DamageIndex);
-				}
-				else
-				{
-					LogWarn(itemIdentifier + " :: PulverizeDamageHook Failed!");
 				}
 			};
 		}
